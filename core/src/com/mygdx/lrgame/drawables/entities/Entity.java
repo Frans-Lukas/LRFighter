@@ -18,4 +18,26 @@ public class Entity {
     public void takeDamage(){
 
     }
+
+    public void update() {
+        Position pos = new Position(getPos().getX() + 1, getPos().getY());
+        setPos(pos);
+    }
+
+
+    public int getHealth() {
+        return health;
+    }
+
+    public Position getPos() {
+        return pos;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
+    public void setPos(Position pos) {
+        this.pos = pos;
+    }
 }

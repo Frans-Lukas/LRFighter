@@ -1,5 +1,7 @@
 package com.mygdx.lrgame;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.lrgame.drawables.entities.Enemy;
 import com.mygdx.lrgame.drawables.entities.FlyweightEntityImage;
 import com.mygdx.lrgame.drawables.entities.Player;
@@ -20,21 +22,21 @@ public class GameLoop {
     private static final Position ENEMY_START_POS = new Position(0, GAME_HEIGHT / 2);
 
 
-    private List<com.mygdx.lrgame.drawables.entities.Entity> entities;
-    private HashMap<Class, FlyweightEntityImage> flyweightMap;
+    private static ArrayList<com.mygdx.lrgame.drawables.entities.Entity> entities;
+    private static HashMap<Class, Texture> flyweightMap;
 
-    public GameLoop() {
+    public static void setUp(){
         /**
          * Create the player and a pool of entities.
          * Create a flyweight hashmap that the pool of entities can
          * get their textures from.
          */
         entities = new ArrayList<com.mygdx.lrgame.drawables.entities.Entity>();
-        flyweightMap = new HashMap<Class, FlyweightEntityImage>();
+        flyweightMap = new HashMap<Class, Texture>();
 
         Player player = new Player(PLAYER_HEALTH, new Position(GAME_WIDTH / 2, GAME_HEIGHT / 2));
 
-        flyweightMap.put(player.getClass(), new FlyweightEntityImage());
+        flyweightMap.put(player.getClass(), new Texture("Player.png"));
         entities.add(player);
 
         boolean flyweightAdded = false;
@@ -43,22 +45,25 @@ public class GameLoop {
             entities.add(enemy);
 
             if(!flyweightAdded){
-                flyweightMap.put(enemy.getClass(), new FlyweightEntityImage());
+                flyweightMap.put(enemy.getClass(), new Texture("Enemy.png"));
                 flyweightAdded = true;
             }
         }
-
     }
 
     public static void Update(){
-
+        for (com.mygdx.lrgame.drawables.entities.Entity entity : entities) {
+            entity.update();
+        }
     }
 
     public static void Input(){
 
     }
 
-    public static void Render(){
-
+    public static void Render(SpriteBatch batch){
+        for (com.mygdx.lrgame.drawables.entities.Entity entity : entities) {
+            batch.draw(flyweightMap.get(entity.getClass()), entity.getPos().getX(), entity.getPos().getY());
+        }
     }
 }
