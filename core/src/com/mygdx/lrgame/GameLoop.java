@@ -20,9 +20,9 @@ public class GameLoop {
 
     private static final int BASIC_ENEMY_HEALTH = 1;
     private static final Position ENEMY_START_POS = new Position(0, GAME_HEIGHT / 2);
+    private static Player player;
 
-
-    private static ArrayList<com.mygdx.lrgame.drawables.entities.Entity> entities;
+    private static ArrayList<Enemy> entities;
     private static HashMap<Class, Texture> flyweightMap;
 
     public static void setUp(){
@@ -31,13 +31,13 @@ public class GameLoop {
          * Create a flyweight hashmap that the pool of entities can
          * get their textures from.
          */
-        entities = new ArrayList<com.mygdx.lrgame.drawables.entities.Entity>();
+        entities = new ArrayList<Enemy>();
         flyweightMap = new HashMap<Class, Texture>();
 
-        Player player = new Player(PLAYER_HEALTH, new Position(GAME_WIDTH / 2, GAME_HEIGHT / 2));
+        player = new Player(PLAYER_HEALTH, new Position(GAME_WIDTH / 2, GAME_HEIGHT / 2));
 
         flyweightMap.put(player.getClass(), new Texture("Player.png"));
-        entities.add(player);
+        //entities.add(player);
 
         boolean flyweightAdded = false;
         for (int i = 0; i < 4; i++) {
@@ -52,8 +52,8 @@ public class GameLoop {
     }
 
     public static void Update(){
-        for (com.mygdx.lrgame.drawables.entities.Entity entity : entities) {
-            entity.update();
+        for (Enemy entity : entities) {
+            entity.update(player.getPos());
         }
     }
 
@@ -62,8 +62,10 @@ public class GameLoop {
     }
 
     public static void Render(SpriteBatch batch){
+        batch.draw(flyweightMap.get(player.getClass()), player.getPos().getX(), player.getPos().getY());
         for (com.mygdx.lrgame.drawables.entities.Entity entity : entities) {
             batch.draw(flyweightMap.get(entity.getClass()), entity.getPos().getX(), entity.getPos().getY());
         }
+
     }
 }

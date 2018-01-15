@@ -19,12 +19,6 @@ public class Entity {
 
     }
 
-    public void update() {
-        Position pos = new Position(getPos().getX() + 1, getPos().getY());
-        setPos(pos);
-    }
-
-
     public int getHealth() {
         return health;
     }

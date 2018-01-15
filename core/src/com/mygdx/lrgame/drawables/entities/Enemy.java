@@ -12,4 +12,8 @@ public class Enemy extends Entity {
     public void takeDamage() {
 
     }
+
+    public void update(Position playerPos) {
+
+    }
 }
