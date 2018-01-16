@@ -36,18 +36,12 @@ public class GameLoop {
 
         player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2, GAME_HEIGHT / 2);
 
-        flyweightMap.put(player.getClass(), new Texture("Player.png"));
-        //entities.add(player);
+        flyweightMap.put(Player.class, new Texture("Player.png"));
+        flyweightMap.put(Enemy.class, new Texture("Enemy.png"));
 
-        boolean flyweightAdded = false;
         for (int i = 0; i < 4; i++) {
             Enemy enemy = new Enemy(BASIC_ENEMY_HEALTH, 0, ENEMY_START_POS_Y);
             entities.add(enemy);
-
-            if(!flyweightAdded){
-                flyweightMap.put(enemy.getClass(), new Texture("Enemy.png"));
-                flyweightAdded = true;
-            }
         }
     }
 
