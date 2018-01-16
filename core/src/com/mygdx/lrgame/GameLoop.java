@@ -3,19 +3,17 @@ package com.mygdx.lrgame;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.lrgame.drawables.entities.Enemy;
-import com.mygdx.lrgame.drawables.entities.FlyweightEntityImage;
+import com.mygdx.lrgame.drawables.entities.Entity;
 import com.mygdx.lrgame.drawables.entities.Player;
-import com.mygdx.lrgame.other.Position;
+import com.mygdx.lrgame.drawables.entities.levels.Level;
 
-import javax.swing.text.html.parser.Entity;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class GameLoop {
 
-    private static final int GAME_HEIGHT = 512;
-    private static final int GAME_WIDTH = 512;
+    private static final int GAME_HEIGHT = 540;
+    private static final int GAME_WIDTH = 960;
     private static final int PLAYER_HEALTH = 3;
 
     private static final int BASIC_ENEMY_HEALTH = 1;
@@ -24,6 +22,8 @@ public class GameLoop {
 
     private static ArrayList<Enemy> entities;
     private static HashMap<Class, Texture> flyweightMap;
+
+    private static Level level1;
 
     public static void setUp(){
         /**
@@ -34,10 +34,11 @@ public class GameLoop {
         entities = new ArrayList<Enemy>();
         flyweightMap = new HashMap<Class, Texture>();
 
-        player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2, GAME_HEIGHT / 2);
+        player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2 - Entity.getWidth() / 2, GAME_HEIGHT / 2);
 
         flyweightMap.put(Player.class, new Texture("Player.png"));
         flyweightMap.put(Enemy.class, new Texture("Enemy.png"));
+        level1 = new Level();
 
         for (int i = 0; i < 4; i++) {
             Enemy enemy = new Enemy(BASIC_ENEMY_HEALTH, 0, ENEMY_START_POS_Y);
@@ -56,10 +57,16 @@ public class GameLoop {
     }
 
     public static void Render(SpriteBatch batch){
-        batch.draw(flyweightMap.get(player.getClass()), player.getX(), player.getY());
+
+        //Always draw level background first.
+        batch.draw(level1.getBackground(),0,0);
+
+        //Then Enemies.
         for (com.mygdx.lrgame.drawables.entities.Entity entity : entities) {
             batch.draw(flyweightMap.get(entity.getClass()), entity.getX(), entity.getY());
         }
 
+        //Lastly player
+        batch.draw(flyweightMap.get(player.getClass()), player.getX(), player.getY());
     }
 }

@@ -1,12 +1,11 @@
 package com.mygdx.lrgame.drawables.entities;
 
-import com.mygdx.lrgame.other.Position;
-
 public class Entity {
     protected int health = 1;
     protected int x;
     protected int y;
-
+    protected static int WIDTH = 64;
+    protected static int HEIGHT = 64;
 
     public Entity(int health, int x, int y) {
         this.health = health;
@@ -32,6 +31,14 @@ public class Entity {
 
     public int getY() {
         return y;
+    }
+
+    public static int getWidth() {
+        return WIDTH;
+    }
+
+    public static int getHeight() {
+        return HEIGHT;
     }
 
     public void setHealth(int health) {
