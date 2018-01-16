@@ -12,4 +12,8 @@ public class Level {
     public Texture getBackground() {
         return background;
     }
+
+    public void update(){
+
+    }
 }

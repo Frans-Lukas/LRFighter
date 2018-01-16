@@ -23,7 +23,7 @@ public class GameLoop {
     private static ArrayList<Enemy> entities;
     private static HashMap<Class, Texture> flyweightMap;
 
-    private static Level level1;
+    private static Level level;
 
     public static void setUp(){
         /**
@@ -38,7 +38,7 @@ public class GameLoop {
 
         flyweightMap.put(Player.class, new Texture("Player.png"));
         flyweightMap.put(Enemy.class, new Texture("Enemy.png"));
-        level1 = new Level();
+        level = new Level();
 
         for (int i = 0; i < 4; i++) {
             Enemy enemy = new Enemy(BASIC_ENEMY_HEALTH, 0, ENEMY_START_POS_Y);
@@ -47,9 +47,12 @@ public class GameLoop {
     }
 
     public static void Update(){
+        level.update();
+        player.update();
         for (Enemy entity : entities) {
             entity.update(player);
         }
+
     }
 
     public static void Input(){
@@ -59,7 +62,7 @@ public class GameLoop {
     public static void Render(SpriteBatch batch){
 
         //Always draw level background first.
-        batch.draw(level1.getBackground(),0,0);
+        batch.draw(level.getBackground(),0,0);
 
         //Then Enemies.
         for (com.mygdx.lrgame.drawables.entities.Entity entity : entities) {

@@ -11,7 +11,22 @@ public class Enemy extends Entity {
 
     }
 
+    /**
+     * Move towards player.
+     * @param player
+     */
     public void update(Player player) {
-
+        int dx = player.x - x;
+        if(dx < Entity.getWidth()){
+            if(dx < Entity.getWidth() + xSpeed){
+                x = player.x - Entity.getWidth();
+            } else
+                x -= xSpeed;
+        } else if(dx > Entity.getWidth()){
+            if(dx > Entity.getWidth() - xSpeed)
+                x = player.x + Entity.getWidth();
+            else
+                x += xSpeed;
+        }
     }
 }

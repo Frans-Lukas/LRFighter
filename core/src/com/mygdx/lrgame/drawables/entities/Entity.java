@@ -2,10 +2,15 @@ package com.mygdx.lrgame.drawables.entities;
 
 public class Entity {
     protected int health = 1;
+
     protected int x;
     protected int y;
-    protected static int WIDTH = 64;
-    protected static int HEIGHT = 64;
+
+    protected int xSpeed = 10;
+    protected int ySpeed = 4;
+
+    private static int WIDTH = 64;
+    private static int HEIGHT = 64;
 
     public Entity(int health, int x, int y) {
         this.health = health;

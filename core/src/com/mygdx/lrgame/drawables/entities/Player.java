@@ -10,4 +10,8 @@ public class Player extends Entity {
     public void takeDamage() {
 
     }
+
+    public void update(){
+
+    }
 }
