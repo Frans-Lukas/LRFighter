@@ -4,8 +4,8 @@ import com.mygdx.lrgame.other.Position;
 
 public class Enemy extends Entity {
 
-    public Enemy(int health, Position pos) {
-        super(health, pos);
+    public Enemy(int health, int x, int y) {
+        super(health, x, y);
     }
 
     @Override
@@ -13,7 +13,7 @@ public class Enemy extends Entity {
 
     }
 
-    public void update(Position playerPos) {
+    public void update(Player player) {
 
     }
 }

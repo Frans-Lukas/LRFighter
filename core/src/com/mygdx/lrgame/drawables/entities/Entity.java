@@ -4,11 +4,14 @@ import com.mygdx.lrgame.other.Position;
 
 public class Entity {
     protected int health = 1;
-    protected Position pos = null;
+    protected int x;
+    protected int y;
 
-    public Entity(int health, Position pos) {
+
+    public Entity(int health, int x, int y) {
         this.health = health;
-        this.pos = pos;
+        this.x = x;
+        this.y = y;
     }
 
     /**
@@ -23,15 +26,23 @@ public class Entity {
         return health;
     }
 
-    public Position getPos() {
-        return pos;
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 
     public void setHealth(int health) {
         this.health = health;
     }
 
-    public void setPos(Position pos) {
-        this.pos = pos;
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 }

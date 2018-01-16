@@ -27,7 +27,6 @@ public class LRGame extends ApplicationAdapter {
 		GameLoop.Update();
 		batch.begin();
 		GameLoop.Render(batch);
-		//batch.draw(img, 0, 0);
 		batch.end();
 	}
 

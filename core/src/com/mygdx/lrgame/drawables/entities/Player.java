@@ -4,8 +4,8 @@ import com.mygdx.lrgame.other.Position;
 
 public class Player extends Entity {
 
-    public Player(int health, Position pos) {
-        super(health, pos);
+    public Player(int health, int x, int y) {
+        super(health, x, y);
     }
 
     @Override
