@@ -52,8 +52,10 @@ public class GameLoop {
         flyweightMap.put(Enemy.class, new Texture("Enemy.png"));
         level = new Level();
 
-        Enemy enemy = new Enemy(BASIC_ENEMY_HEALTH, 0, ENEMY_START_POS_Y);
-        entities.add(enemy);
+        Enemy enemyLeft = new Enemy(BASIC_ENEMY_HEALTH, 0, ENEMY_START_POS_Y);
+        Enemy enemyRight = new Enemy(BASIC_ENEMY_HEALTH, GAME_WIDTH, ENEMY_START_POS_Y);
+        entities.add(enemyLeft);
+        entities.add(enemyRight);
 
     }
 
@@ -78,6 +80,8 @@ public class GameLoop {
 
         //Always draw level background first.
         batch.draw(level.getBackground(),0,0);
+
+        //Then range indicators
         batch.end();
         renderRange();
         batch.begin();
