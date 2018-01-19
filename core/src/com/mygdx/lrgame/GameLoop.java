@@ -1,5 +1,7 @@
 package com.mygdx.lrgame;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.lrgame.drawables.entities.Enemy;
@@ -25,6 +27,9 @@ public class GameLoop {
 
     private static Level level;
 
+    private static boolean leftIsPressed;
+    private static boolean rightIsPressed;
+
     public static void setUp(){
         /**
          * Create the player and a pool of entities.
@@ -48,7 +53,7 @@ public class GameLoop {
 
     public static void Update(){
         level.update();
-        player.update();
+        player.update(leftIsPressed, rightIsPressed);
         for (Enemy entity : entities) {
             entity.update(player);
         }
@@ -56,6 +61,10 @@ public class GameLoop {
     }
 
     public static void Input(){
+        leftIsPressed = Gdx.input.isKeyPressed(Input.Keys.A) ||
+                        Gdx.input.isKeyPressed(Input.Keys.LEFT);
+        rightIsPressed = Gdx.input.isKeyPressed(Input.Keys.D) ||
+                        Gdx.input.isKeyPressed(Input.Keys.RIGHT);
 
     }
 

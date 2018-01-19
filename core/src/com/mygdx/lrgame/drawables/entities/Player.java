@@ -11,7 +11,6 @@ public class Player extends Entity {
 
     }
 
-    public void update(){
-
+    public void update(boolean leftIsPressed, boolean rightIsPressed){
     }
 }
