@@ -23,7 +23,7 @@ public class Enemy extends Entity {
             } else
                 x -= xSpeed;
         } else if(dx > Entity.getWidth()){
-            if(dx > Entity.getWidth() - xSpeed)
+            if(dx < Entity.getWidth() - xSpeed)
                 x = player.x + Entity.getWidth();
             else
                 x += xSpeed;

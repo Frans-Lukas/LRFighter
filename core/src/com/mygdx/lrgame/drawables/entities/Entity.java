@@ -4,10 +4,10 @@ public class Entity {
     protected int x;
     protected int y;
     protected int health = 1;
-    protected int xSpeed = 10;
+    protected int xSpeed = 1;
     protected int ySpeed = 4;
-    private static int WIDTH = 64;
-    private static int HEIGHT = 64;
+    private static int WIDTH = 32;
+    private static int HEIGHT = 32;
 
 
     public Entity(int health, int x, int y) {
