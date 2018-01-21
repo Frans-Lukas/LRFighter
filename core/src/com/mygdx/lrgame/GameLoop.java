@@ -61,7 +61,7 @@ public class GameLoop {
 
     public static void Update(){
         level.update();
-        player.update(entities);
+        player.update(entities, leftIsPressed, rightIsPressed);
         for (Enemy entity : entities) {
             entity.update(player);
         }
