@@ -16,7 +16,7 @@ public class Enemy extends Entity {
      * Move towards player.
      * @param player
      */
-    public void update(Player player) {
+    public void update(player.Player player) {
         int dx = player.x - x;
         if(dx < -Entity.getWidth()){
             if(x - xSpeed < player.x + Entity.getWidth()){

@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.lrgame.drawables.entities.Enemy;
 import com.mygdx.lrgame.drawables.entities.Entity;
-import com.mygdx.lrgame.drawables.entities.Player;
+import com.mygdx.lrgame.drawables.entities.player.Player;
 import com.mygdx.lrgame.drawables.entities.levels.Level;
 
 import java.util.ArrayList;

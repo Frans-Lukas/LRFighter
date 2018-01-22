@@ -1,4 +1,4 @@
-package com.mygdx.lrgame.drawables.entities.levels;
+package com.mygdx.lrgame.drawables.levels;
 
 import com.badlogic.gdx.graphics.Texture;
 

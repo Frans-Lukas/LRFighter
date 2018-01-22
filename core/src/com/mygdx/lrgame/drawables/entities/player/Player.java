@@ -1,4 +1,8 @@
-package com.mygdx.lrgame.drawables.entities;
+package com.mygdx.lrgame.drawables.entities.player;
+
+import com.mygdx.lrgame.drawables.entities.Enemy;
+import com.mygdx.lrgame.drawables.entities.Entity;
+import com.mygdx.lrgame.helper.PlayerState;
 
 import java.util.ArrayList;
 
@@ -6,10 +10,12 @@ public class Player extends Entity {
     private final int range = 200;
     private Enemy closestEnemy;
     private EntityState currentEntityState;
+    private PlayerState state;
 
-    public Player(int health, int x, int y) {
+    public Player(int health, int x, int y, PlayerState state) {
         super(health, x, y);
         currentEntityState = EntityState.STATE_READY;
+        this.state = state;
     }
 
     @Override
@@ -23,7 +29,7 @@ public class Player extends Entity {
     private boolean enemyIsInRange(ArrayList<Enemy> entities) {
         int enemyDistance = 5000;
         for (Enemy entity : entities) {
-            int tempDistance = Math.abs(entity.x - x);
+            int tempDistance = Math.abs(entity.getX() - x);
             if(tempDistance <  enemyDistance && tempDistance < range){
                 closestEnemy = entity;
                 enemyDistance =  tempDistance;
