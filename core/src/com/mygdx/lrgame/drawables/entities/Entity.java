@@ -1,5 +1,8 @@
 package com.mygdx.lrgame.drawables.entities;
 
+import com.badlogic.gdx.Gdx;
+import com.mygdx.lrgame.helper.FPSHelper;
+
 public class Entity {
     protected int x;
     protected int y;
@@ -47,6 +50,10 @@ public class Entity {
 
     public static int getHeight() {
         return HEIGHT;
+    }
+
+    public float getXSpeed() {
+        return xSpeed * Gdx.graphics.getDeltaTime() * 100;
     }
 
     public void setHealth(int health) {

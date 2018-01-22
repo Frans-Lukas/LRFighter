@@ -13,7 +13,6 @@ public class LRGame extends ApplicationAdapter {
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
 		GameLoop.setUp();
 	}
 
@@ -38,6 +37,6 @@ public class LRGame extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		batch.dispose();
-		img.dispose();
+		GameLoop.dispose();
 	}
 }

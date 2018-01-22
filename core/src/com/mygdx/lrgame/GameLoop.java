@@ -132,4 +132,15 @@ public class GameLoop {
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
+
+    /**
+     * Disposes everything that needs disposing of in the main game loop.
+     * Except the spriteBatch
+     */
+    public static void dispose() {
+        for (Class textureClasses : flyweightMap.keySet()) {
+            flyweightMap.get(textureClasses).dispose();
+        }
+        shapeRenderer.dispose();
+    }
 }
