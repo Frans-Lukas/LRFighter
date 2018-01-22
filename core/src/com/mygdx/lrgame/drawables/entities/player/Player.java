@@ -2,7 +2,6 @@ package com.mygdx.lrgame.drawables.entities.player;
 
 import com.mygdx.lrgame.drawables.entities.Enemy;
 import com.mygdx.lrgame.drawables.entities.Entity;
-import com.mygdx.lrgame.helper.PlayerState;
 
 import java.util.ArrayList;
 
@@ -23,7 +22,8 @@ public class Player extends Entity {
 
     }
 
-    public void update(ArrayList<Enemy> entities, boolean leftIsPressed, boolean rightIsPressed) {
+    public void update() {
+        state.update();
     }
 
     private boolean enemyIsInRange(ArrayList<Enemy> entities) {

@@ -9,11 +9,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.lrgame.drawables.entities.Enemy;
 import com.mygdx.lrgame.drawables.entities.Entity;
+import com.mygdx.lrgame.drawables.levels.Level;
 import com.mygdx.lrgame.drawables.entities.player.Player;
-import com.mygdx.lrgame.drawables.entities.levels.Level;
+import com.mygdx.lrgame.drawables.entities.player.PlayerStateReady;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class GameLoop {
 
@@ -46,7 +49,7 @@ public class GameLoop {
         entities = new ArrayList<Enemy>();
         flyweightMap = new HashMap<Class, Texture>();
 
-        player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2 - Entity.getWidth() / 2, GAME_HEIGHT / 2);
+        player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2 - Entity.getWidth() / 2, GAME_HEIGHT / 2, new PlayerStateReady());
 
         flyweightMap.put(Player.class, new Texture("Player.png"));
         flyweightMap.put(Enemy.class, new Texture("Enemy.png"));
@@ -79,10 +82,40 @@ public class GameLoop {
             case STATE_FLYING:
                 break;
             case STATE_READY:
+                Enemy enemyToAttack = null;
+                if(leftIsPressed){
+                    enemyToAttack = findClosestEnemy(true);
+                } else if(rightIsPressed){
+                    enemyToAttack = findClosestEnemy(false);
+                }
+                if(enemyToAttack != null){
+                    enemyToAttack.setX(0);
+                }
                 break;
             default:
                 break;
         }
+    }
+
+    private static Enemy findClosestEnemy(final boolean toLeft) {
+        //if toLeft get left half of screen else get right half of screen.
+        final int range = toLeft ? -player.getRange() : player.getRange();
+
+        //if toLeft get x pos of left side of player else get right x pos of player
+        final int playerX = toLeft ? player.getX() : player.getX() + player.getWidth();
+
+        //return closest enemy from the list.
+        return entities.stream().
+                filter(entity -> enemyIsInRange(playerX, range, entity.getX())).
+                sorted((e1, e2) -> toLeft ? (e1.getX() - e2.getX()) : (e2.getX() - e1.getX())).
+                findFirst().
+                orElse(null);
+    }
+
+    private static boolean enemyIsInRange(int startPos, int width, int x) {
+        int leftPoint = Math.min(startPos, startPos + width);
+        int rightPoint = Math.max(startPos, startPos + width);
+        return x >= leftPoint && x <= rightPoint;
     }
 
     public static void Input(){
