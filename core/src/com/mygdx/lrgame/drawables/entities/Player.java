@@ -5,9 +5,11 @@ import java.util.ArrayList;
 public class Player extends Entity {
     private final int range = 200;
     private Enemy closestEnemy;
+    private EntityState currentEntityState;
 
     public Player(int health, int x, int y) {
         super(health, x, y);
+        currentEntityState = EntityState.STATE_READY;
     }
 
     @Override
@@ -16,11 +18,6 @@ public class Player extends Entity {
     }
 
     public void update(ArrayList<Enemy> entities, boolean leftIsPressed, boolean rightIsPressed) {
-        if(leftIsPressed && enemyIsInRange(entities)){
-            if(closestEnemy != null){
-                closestEnemy.x = x - Entity.getWidth();
-            }
-        }
     }
 
     private boolean enemyIsInRange(ArrayList<Enemy> entities) {
@@ -39,5 +36,10 @@ public class Player extends Entity {
 
     public int getRange() {
         return range;
+    }
+
+    @Override
+    public EntityState getCurrentEntityState() {
+        return currentEntityState;
     }
 }

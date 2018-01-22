@@ -8,6 +8,7 @@ public class Entity {
     protected int ySpeed = 4;
     private static int WIDTH = 32;
     private static int HEIGHT = 32;
+    protected EntityState currentEntityState;
 
 
     public Entity(int health, int x, int y) {
@@ -40,6 +41,10 @@ public class Entity {
         return WIDTH;
     }
 
+    public EntityState getCurrentEntityState() {
+        return currentEntityState;
+    }
+
     public static int getHeight() {
         return HEIGHT;
     }
@@ -56,7 +61,15 @@ public class Entity {
         this.y = y;
     }
 
-    protected enum State{
-        ATTACKING, DYING
+    public void setCurrentEntityState(EntityState currentEntityState) {
+        this.currentEntityState = currentEntityState;
+    }
+
+    public enum EntityState {
+        STATE_ATTACKING,
+        STATE_DYING,
+        STATE_MOVING,
+        STATE_FLYING,
+        STATE_READY
     }
 }

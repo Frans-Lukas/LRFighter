@@ -61,11 +61,28 @@ public class GameLoop {
 
     public static void Update(){
         level.update();
-        player.update(entities, leftIsPressed, rightIsPressed);
+        updatePlayer();
         for (Enemy entity : entities) {
             entity.update(player);
         }
 
+    }
+
+    private static void updatePlayer() {
+        switch(player.getCurrentEntityState()){
+            case STATE_ATTACKING:
+                break;
+            case STATE_DYING:
+                break;
+            case STATE_MOVING:
+                break;
+            case STATE_FLYING:
+                break;
+            case STATE_READY:
+                break;
+            default:
+                break;
+        }
     }
 
     public static void Input(){
