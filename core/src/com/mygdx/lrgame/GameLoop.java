@@ -127,29 +127,36 @@ public class GameLoop {
     }
 
     public static void Render(SpriteBatch batch){
-
         //Always draw level background first.
-        batch.draw(level.getBackground(),0,0);
-
+        renderBackground(batch);
         //Then range indicators
-        batch.end();
-        renderRange();
-        batch.begin();
-
+        renderRange(batch);
         //Then Enemies.
-        for (com.mygdx.lrgame.drawables.entities.Entity entity : entities) {
-            batch.draw(flyweightMap.get(entity.getClass()), entity.getX(), entity.getY(),
-                    Entity.getWidth(),
-                    Entity.getHeight());
-        }
-
+        renderEnemies(batch);
         //Lastly player
+        renderPlayer(batch);
+    }
+
+    private static void renderPlayer(SpriteBatch batch) {
         batch.draw(flyweightMap.get(player.getClass()), player.getX(), player.getY(),
                 Entity.getWidth(),
                 Entity.getHeight());
     }
 
-    private static void renderRange(){
+    private static void renderEnemies(SpriteBatch batch) {
+        for (Entity entity : entities) {
+            batch.draw(flyweightMap.get(entity.getClass()), entity.getX(), entity.getY(),
+                    Entity.getWidth(),
+                    Entity.getHeight());
+        }
+    }
+
+    private static void renderBackground(SpriteBatch batch) {
+        batch.draw(level.getBackground(),0,0);
+    }
+
+    private static void renderRange(SpriteBatch batch){
+        batch.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
         shapeRenderer.setColor(rangeIndicatorRightColor);
@@ -164,6 +171,7 @@ public class GameLoop {
 
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
+        batch.begin();
     }
 
     /**
