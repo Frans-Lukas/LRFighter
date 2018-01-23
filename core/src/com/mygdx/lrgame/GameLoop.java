@@ -26,6 +26,7 @@ public class GameLoop {
     private static final int BASIC_ENEMY_HEALTH = 1;
     private static final int ENEMY_START_POS_Y = GAME_HEIGHT / 2;
     private static Player player;
+    private static Enemy enemyToAttack;
 
     private static ArrayList<Enemy> enemies;
     private static EnemyModifier nillModifier;
@@ -52,6 +53,8 @@ public class GameLoop {
         flyweightMap = new HashMap<Class, Texture>();
 
         player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2 - GameEntity.getWidth() / 2, GAME_HEIGHT / 2, new PlayerStateReady());
+        enemyToAttack = null;
+
 
         flyweightMap.put(Player.class, new Texture("Player.png"));
         flyweightMap.put(Enemy.class, new Texture("Enemy.png"));
@@ -71,7 +74,7 @@ public class GameLoop {
         level.update();
         updatePlayer();
         for (Enemy enemy : enemies) {
-            enemy.update(player);
+            enemy.update(player, 0);
         }
     }
 
@@ -86,24 +89,31 @@ public class GameLoop {
             case STATE_FLYING:
                 break;
             case STATE_READY:
-                Enemy enemyToAttack = null;
                 if(leftIsPressed){
                     enemyToAttack = findClosestEnemy(true);
-                    if(enemyToAttack != null){
-                        leftModifier = new EnemyModifier(10, 0);
-                        rightModifier = new EnemyModifier(-10, 0);
-                    }
                 } else if(rightIsPressed){
                     enemyToAttack = findClosestEnemy(false);
-                    if(enemyToAttack != null){
-                        rightModifier = new EnemyModifier(10, 0);
-                        leftModifier = new EnemyModifier(-10, 0);
-                    }
                 }
                 break;
             default:
                 break;
         }
+        if(enemyToAttack != null){
+            
+        }
+    }
+
+    private static void updateWorld(float x, float y){
+        for (Enemy enemy : enemies) {
+            enemy.update(player, -x);
+        }
+    }
+
+    private static boolean isToTheLeft(Player player, Enemy enemy){
+        return enemy.getX() < player.getX();
+    }
+    private static boolean isToTheRight(Player player, Enemy enemy){
+        return enemy.getX() > player.getX() + player.getWidth();
     }
 
     /**
