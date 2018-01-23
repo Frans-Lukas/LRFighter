@@ -2,7 +2,7 @@ package com.mygdx.lrgame.drawables.entities;
 
 import com.mygdx.lrgame.drawables.entities.player.Player;
 
-public class Enemy extends Entity {
+public class Enemy extends GameEntity {
 
     public Enemy(int health, int x, int y) {
         super(health, x, y);
@@ -16,20 +16,20 @@ public class Enemy extends Entity {
 
     /**
      * Move towards player.
-     * @param player
+     * @param player the player to move to
      */
     public void update(Player player) {
         int dx = player.x - x;
-        if(dx < -Entity.getWidth()){
-            if(x - xSpeed < player.x + Entity.getWidth()){
-                x = player.x + Entity.getWidth();
+        if(dx < -GameEntity.getWidth()){
+            if(x - xSpeed < player.x + GameEntity.getWidth()){
+                x = player.x + GameEntity.getWidth();
             }
             else{
                 x -= getXSpeed();
             }
-        } else if(dx > Entity.getWidth()){
-            if(dx < Entity.getWidth() - xSpeed)
-                x = player.x + Entity.getWidth();
+        } else if(dx > GameEntity.getWidth()){
+            if(dx < GameEntity.getWidth() - xSpeed)
+                x = player.x + GameEntity.getWidth();
             else
                 x += getXSpeed();
         }

@@ -1,7 +1,7 @@
 package com.mygdx.lrgame.helper;
 
 import com.mygdx.lrgame.drawables.entities.Enemy;
-import com.mygdx.lrgame.drawables.entities.Entity;
+import com.mygdx.lrgame.drawables.entities.GameEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 public class ObjectPool {
     private static List<Enemy> enemyPool = new ArrayList();
 
-    public static Entity acquireEntity(){
+    public static GameEntity acquireEntity(){
         if(enemyPool.isEmpty()){
             return new Enemy(1, 0,0);
         }

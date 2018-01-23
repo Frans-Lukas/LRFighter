@@ -8,15 +8,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.lrgame.drawables.entities.Enemy;
-import com.mygdx.lrgame.drawables.entities.Entity;
+import com.mygdx.lrgame.drawables.entities.GameEntity;
 import com.mygdx.lrgame.drawables.levels.Level;
 import com.mygdx.lrgame.drawables.entities.player.Player;
 import com.mygdx.lrgame.drawables.entities.player.PlayerStateReady;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class GameLoop {
 
@@ -49,7 +47,7 @@ public class GameLoop {
         entities = new ArrayList<Enemy>();
         flyweightMap = new HashMap<Class, Texture>();
 
-        player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2 - Entity.getWidth() / 2, GAME_HEIGHT / 2, new PlayerStateReady());
+        player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2 - GameEntity.getWidth() / 2, GAME_HEIGHT / 2, new PlayerStateReady());
 
         flyweightMap.put(Player.class, new Texture("Player.png"));
         flyweightMap.put(Enemy.class, new Texture("Enemy.png"));
@@ -97,6 +95,12 @@ public class GameLoop {
         }
     }
 
+    /**
+     * Find the closeset enemy either to the right or to the left of the player according
+     * to the player range
+     * @param toLeft if method should look to the left or right.
+     * @return the enemy that is close, or null if no enemy is within range.
+     */
     private static Enemy findClosestEnemy(final boolean toLeft) {
         //if toLeft get left half of screen else get right half of screen.
         final int range = toLeft ? -player.getRange() : player.getRange();
@@ -139,15 +143,15 @@ public class GameLoop {
 
     private static void renderPlayer(SpriteBatch batch) {
         batch.draw(flyweightMap.get(player.getClass()), player.getX(), player.getY(),
-                Entity.getWidth(),
-                Entity.getHeight());
+                GameEntity.getWidth(),
+                GameEntity.getHeight());
     }
 
     private static void renderEnemies(SpriteBatch batch) {
-        for (Entity entity : entities) {
+        for (GameEntity entity : entities) {
             batch.draw(flyweightMap.get(entity.getClass()), entity.getX(), entity.getY(),
-                    Entity.getWidth(),
-                    Entity.getHeight());
+                    GameEntity.getWidth(),
+                    GameEntity.getHeight());
         }
     }
 
@@ -155,8 +159,13 @@ public class GameLoop {
         batch.draw(level.getBackground(),0,0);
     }
 
+    /**
+     * Render the range indicators for where the player can reach.
+     * @param batch
+     */
     private static void renderRange(SpriteBatch batch){
         batch.end();
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
         shapeRenderer.setColor(rangeIndicatorRightColor);
@@ -171,6 +180,7 @@ public class GameLoop {
 
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
+
         batch.begin();
     }
 

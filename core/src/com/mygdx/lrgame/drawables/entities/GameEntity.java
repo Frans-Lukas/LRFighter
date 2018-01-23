@@ -3,7 +3,7 @@ package com.mygdx.lrgame.drawables.entities;
 import com.badlogic.gdx.Gdx;
 import com.mygdx.lrgame.helper.FPSHelper;
 
-public class Entity {
+public class GameEntity {
     protected int x;
     protected int y;
     protected int health = 1;
@@ -14,7 +14,7 @@ public class Entity {
     protected EntityState currentEntityState;
 
 
-    public Entity(int health, int x, int y) {
+    public GameEntity(int health, int x, int y) {
         this.health = health;
         this.x = x;
         this.y = y;
