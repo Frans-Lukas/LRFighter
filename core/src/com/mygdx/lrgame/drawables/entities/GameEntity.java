@@ -1,7 +1,6 @@
 package com.mygdx.lrgame.drawables.entities;
 
 import com.badlogic.gdx.Gdx;
-import com.mygdx.lrgame.helper.FPSHelper;
 
 public class GameEntity {
     protected int x;
@@ -53,7 +52,7 @@ public class GameEntity {
     }
 
     public float getXSpeed() {
-        return xSpeed * Gdx.graphics.getDeltaTime() * 100;
+        return (xSpeed)* Gdx.graphics.getDeltaTime() * 100 ;
     }
 
     public void setHealth(int health) {

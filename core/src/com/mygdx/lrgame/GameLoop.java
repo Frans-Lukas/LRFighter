@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.lrgame.drawables.entities.enemy.Enemy;
 import com.mygdx.lrgame.drawables.entities.GameEntity;
+import com.mygdx.lrgame.drawables.entities.enemy.EnemyModifier;
 import com.mygdx.lrgame.drawables.levels.Level;
 import com.mygdx.lrgame.drawables.entities.player.Player;
 import com.mygdx.lrgame.drawables.entities.player.PlayerStateReady;
@@ -27,6 +28,9 @@ public class GameLoop {
     private static Player player;
 
     private static ArrayList<Enemy> enemies;
+    private static EnemyModifier nillModifier;
+    private static EnemyModifier leftModifier;
+    private static EnemyModifier rightModifier;
     private static HashMap<Class, Texture> flyweightMap;
 
     private static Level level;
@@ -53,6 +57,9 @@ public class GameLoop {
         flyweightMap.put(Enemy.class, new Texture("Enemy.png"));
         level = new Level();
 
+        nillModifier = new EnemyModifier(0,0);
+        leftModifier = nillModifier;
+        rightModifier = nillModifier;
         Enemy enemyLeft = new Enemy(BASIC_ENEMY_HEALTH, 0, ENEMY_START_POS_Y);
         Enemy enemyRight = new Enemy(BASIC_ENEMY_HEALTH, GAME_WIDTH, ENEMY_START_POS_Y);
         enemies.add(enemyLeft);
@@ -66,7 +73,6 @@ public class GameLoop {
         for (Enemy enemy : enemies) {
             enemy.update(player);
         }
-
     }
 
     private static void updatePlayer() {
@@ -83,11 +89,16 @@ public class GameLoop {
                 Enemy enemyToAttack = null;
                 if(leftIsPressed){
                     enemyToAttack = findClosestEnemy(true);
+                    if(enemyToAttack != null){
+                        leftModifier = new EnemyModifier(10, 0);
+                        rightModifier = new EnemyModifier(-10, 0);
+                    }
                 } else if(rightIsPressed){
                     enemyToAttack = findClosestEnemy(false);
-                }
-                if(enemyToAttack != null){
-                    enemyToAttack.setX(0);
+                    if(enemyToAttack != null){
+                        rightModifier = new EnemyModifier(10, 0);
+                        leftModifier = new EnemyModifier(-10, 0);
+                    }
                 }
                 break;
             default:

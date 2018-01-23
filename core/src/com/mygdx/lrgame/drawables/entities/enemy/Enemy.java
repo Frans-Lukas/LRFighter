@@ -5,6 +5,8 @@ import com.mygdx.lrgame.drawables.entities.player.Player;
 
 public class Enemy extends GameEntity {
 
+
+
     public Enemy(int health, int x, int y) {
         super(health, x, y);
         xSpeed = 3;
@@ -20,19 +22,22 @@ public class Enemy extends GameEntity {
      * @param player the player to move to
      */
     public void update(Player player) {
-        int dx = player.getX() - x;
-        if(dx < -GameEntity.getWidth()){
-            if(x - xSpeed < player.getX() + GameEntity.getWidth()){
-                x = player.getX() + GameEntity.getWidth();
-            }
-            else{
+        //This enemy is to the right of the player
+        if(x > player.getX() + player.getWidth()){
+            if(x - getXSpeed() < player.getX() + player.getWidth()){
+                x = player.getX() + player.getWidth();
+            } else{
                 x -= getXSpeed();
             }
-        } else if(dx > GameEntity.getWidth()){
-            if(dx < GameEntity.getWidth() - xSpeed)
-                x = player.getX() + GameEntity.getWidth();
-            else
+        } //this enemy is to the left of the enemy.
+        else if(x < player.getX() - player.getWidth()){
+            if(x + getXSpeed() > player.getX() - player.getWidth()){
+                x = player.getX() - player.getWidth();
+            } else{
                 x += getXSpeed();
+            }
         }
     }
+
+
 }
