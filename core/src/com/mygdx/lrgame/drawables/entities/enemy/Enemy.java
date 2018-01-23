@@ -22,7 +22,8 @@ public class Enemy extends GameEntity {
     /**
      * Move towards player.
      * @param player the player to move to
-     * @param extraSpeed
+     * @param extraSpeed the speed that the player moves at
+     * @return whether the enemy reached the player or not
      */
     public boolean update(Player player, float extraSpeed) {
         if(extraSpeed == 0) {

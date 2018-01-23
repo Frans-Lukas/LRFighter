@@ -13,7 +13,7 @@ public class Player extends GameEntity {
         super(health, x, y);
         currentEntityState = EntityState.STATE_READY;
         this.state = state;
-        xSpeed = 10;
+        xSpeed = 5;
     }
 
     @Override
