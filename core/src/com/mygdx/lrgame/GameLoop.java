@@ -107,7 +107,7 @@ public class GameLoop {
         //return closest enemy from the list.
         return entities.stream().
                 filter(entity -> enemyIsInRange(playerX, range, entity.getX())).
-                sorted((e1, e2) -> toLeft ? (e1.getX() - e2.getX()) : (e2.getX() - e1.getX())).
+                sorted((enemy1, enemy2) -> toLeft ? (enemy1.getX() - enemy2.getX()) : (enemy2.getX() - enemy1.getX())).
                 findFirst().
                 orElse(null);
     }
