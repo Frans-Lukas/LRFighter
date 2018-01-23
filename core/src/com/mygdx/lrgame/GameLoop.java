@@ -99,20 +99,37 @@ public class GameLoop {
                 break;
         }
         if(enemyToAttack != null){
-            
+            if(isColliding(player, enemyToAttack)){
+                enemyToAttack = null;
+            } else {
+                if (isToTheLeft(player, enemyToAttack)) {
+                    updateWorld(-player.getXSpeed(), 0);
+                } else if (isToTheRight(player, enemyToAttack)) {
+                    updateWorld(player.getXSpeed(), 0);
+                }
+            }
         }
+    }
+
+    private static boolean isColliding(GameEntity entity1, GameEntity entity2) {
+        return (entity2.getX() > entity1.getX() &&
+                entity2.getX() < entity1.getX() + entity1.getWidth()) ||
+                (entity2.getX() + entity2.getWidth() > entity1.getX() &&
+                        entity2.getX() + entity2.getWidth() > entity1.getX() + entity1.getWidth());
     }
 
     private static void updateWorld(float x, float y){
         for (Enemy enemy : enemies) {
-            enemy.update(player, -x);
+            if(enemy.update(player, -x)){
+                enemyToAttack = null;
+            }
         }
     }
 
-    private static boolean isToTheLeft(Player player, Enemy enemy){
+    public static boolean isToTheLeft(Player player, Enemy enemy){
         return enemy.getX() < player.getX();
     }
-    private static boolean isToTheRight(Player player, Enemy enemy){
+    public static boolean isToTheRight(Player player, Enemy enemy){
         return enemy.getX() > player.getX() + player.getWidth();
     }
 
@@ -137,6 +154,14 @@ public class GameLoop {
                 orElse(null);
     }
 
+    /**
+     * Checks weather an enemy is in the range given by a startpos a width and a position of the
+     * entitiy to check if it is in range.
+     * @param startPos the start position of the range check
+     * @param width the range
+     * @param x the position of the entitiy that might be in range.
+     * @return if the x position is inside the range.
+     */
     private static boolean enemyIsInRange(int startPos, int width, int x) {
         int leftPoint = Math.min(startPos, startPos + width);
         int rightPoint = Math.max(startPos, startPos + width);

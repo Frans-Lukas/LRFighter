@@ -51,8 +51,8 @@ public class GameEntity {
         return HEIGHT;
     }
 
-    public float getXSpeed(float extraSpeed) {
-        return (xSpeed + extraSpeed)* Gdx.graphics.getDeltaTime() * 100 ;
+    public float getXSpeed() {
+        return (xSpeed)* Gdx.graphics.getDeltaTime() * 100 ;
     }
 
     public void setHealth(int health) {
