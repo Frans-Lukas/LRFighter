@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.mygdx.lrgame.drawables.entities.Enemy;
+import com.mygdx.lrgame.drawables.entities.enemy.Enemy;
 import com.mygdx.lrgame.drawables.entities.GameEntity;
 import com.mygdx.lrgame.drawables.levels.Level;
 import com.mygdx.lrgame.drawables.entities.player.Player;
@@ -26,7 +26,7 @@ public class GameLoop {
     private static final int ENEMY_START_POS_Y = GAME_HEIGHT / 2;
     private static Player player;
 
-    private static ArrayList<Enemy> entities;
+    private static ArrayList<Enemy> enemies;
     private static HashMap<Class, Texture> flyweightMap;
 
     private static Level level;
@@ -44,7 +44,7 @@ public class GameLoop {
          * Create a flyweight hashmap that the pool of entities can
          * get their textures from.
          */
-        entities = new ArrayList<Enemy>();
+        enemies = new ArrayList<Enemy>();
         flyweightMap = new HashMap<Class, Texture>();
 
         player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2 - GameEntity.getWidth() / 2, GAME_HEIGHT / 2, new PlayerStateReady());
@@ -55,16 +55,16 @@ public class GameLoop {
 
         Enemy enemyLeft = new Enemy(BASIC_ENEMY_HEALTH, 0, ENEMY_START_POS_Y);
         Enemy enemyRight = new Enemy(BASIC_ENEMY_HEALTH, GAME_WIDTH, ENEMY_START_POS_Y);
-        entities.add(enemyLeft);
-        entities.add(enemyRight);
+        enemies.add(enemyLeft);
+        enemies.add(enemyRight);
 
     }
 
     public static void Update(){
         level.update();
         updatePlayer();
-        for (Enemy entity : entities) {
-            entity.update(player);
+        for (Enemy enemy : enemies) {
+            enemy.update(player);
         }
 
     }
@@ -109,7 +109,7 @@ public class GameLoop {
         final int playerX = toLeft ? player.getX() : player.getX() + player.getWidth();
 
         //return closest enemy from the list.
-        return entities.stream().
+        return enemies.stream().
                 filter(entity -> enemyIsInRange(playerX, range, entity.getX())).
                 sorted((enemy1, enemy2) -> toLeft ? (enemy1.getX() - enemy2.getX()) : (enemy2.getX() - enemy1.getX())).
                 findFirst().
@@ -148,8 +148,8 @@ public class GameLoop {
     }
 
     private static void renderEnemies(SpriteBatch batch) {
-        for (GameEntity entity : entities) {
-            batch.draw(flyweightMap.get(entity.getClass()), entity.getX(), entity.getY(),
+        for (GameEntity enemy : enemies) {
+            batch.draw(flyweightMap.get(enemy.getClass()), enemy.getX(), enemy.getY(),
                     GameEntity.getWidth(),
                     GameEntity.getHeight());
         }

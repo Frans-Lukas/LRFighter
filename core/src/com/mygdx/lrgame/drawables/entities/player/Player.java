@@ -1,6 +1,6 @@
 package com.mygdx.lrgame.drawables.entities.player;
 
-import com.mygdx.lrgame.drawables.entities.Enemy;
+import com.mygdx.lrgame.drawables.entities.enemy.Enemy;
 import com.mygdx.lrgame.drawables.entities.GameEntity;
 
 public class Player extends GameEntity {

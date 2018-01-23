@@ -1,6 +1,6 @@
 package com.mygdx.lrgame.helper;
 
-import com.mygdx.lrgame.drawables.entities.Enemy;
+import com.mygdx.lrgame.drawables.entities.enemy.Enemy;
 import com.mygdx.lrgame.drawables.entities.GameEntity;
 
 import java.util.ArrayList;
