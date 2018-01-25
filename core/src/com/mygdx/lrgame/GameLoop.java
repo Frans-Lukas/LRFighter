@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -24,8 +25,8 @@ import java.util.HashMap;
 
 public class GameLoop {
 
-    private static final int GAME_HEIGHT = 540;
-    private static final int GAME_WIDTH = 960;
+    private static final int GAME_HEIGHT = 100;
+    private static final int GAME_WIDTH = 100;
     private static final int PLAYER_HEALTH = 3;
 
     private static final int BASIC_ENEMY_HEALTH = 1;
@@ -41,7 +42,7 @@ public class GameLoop {
     private static EnemyModifier nillModifier;
     private static EnemyModifier leftModifier;
     private static EnemyModifier rightModifier;
-    private static HashMap<Class, Texture> flyweightMap;
+    private static HashMap<Class, Sprite> flyweightMap;
 
     private static ArrayList<EnemRagdoll> ragdolls;
     private static World physicsWorld;
@@ -65,22 +66,25 @@ public class GameLoop {
          */
         enemies = new ArrayList<Enemy>();
         ragdolls = new ArrayList<>();
-        flyweightMap = new HashMap<Class, Texture>();
+        flyweightMap = new HashMap<Class, Sprite>();
 
-        player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2 - GameEntity.getWidth() / 2, GAME_HEIGHT / 2);
+        player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2, GAME_HEIGHT / 2);
         enemyToAttack = null;
 
         physicsWorld = new World(new Vector2(0, -10), true);
         debugRenderer = new Box2DDebugRenderer();
         accumulator = 0;
 
-        flyweightMap.put(Player.class, new Texture("Player.png"));
-        flyweightMap.put(Enemy.class, new Texture("Enemy.png"));
+        Sprite playerSprite = new Sprite(new Texture("Player.png"));
+        playerSprite.setSize(player.getWidth(), player.getHeight());
+
+        Sprite enemySprite = new Sprite(new Texture("Enemy.png"));
+        enemySprite.setSize(player.getWidth(), player.getHeight());
+
+        flyweightMap.put(Player.class, playerSprite);
+        flyweightMap.put(Enemy.class, enemySprite);
         level = new Level();
 
-        nillModifier = new EnemyModifier(0,0);
-        leftModifier = nillModifier;
-        rightModifier = nillModifier;
         Enemy enemyLeft = new Enemy(BASIC_ENEMY_HEALTH, 0, ENEMY_START_POS_Y);
         Enemy enemyRight = new Enemy(BASIC_ENEMY_HEALTH, GAME_WIDTH, ENEMY_START_POS_Y);
         enemies.add(enemyLeft);
@@ -245,21 +249,20 @@ public class GameLoop {
     }
 
     private static void renderPlayer(SpriteBatch batch) {
-        batch.draw(flyweightMap.get(player.getClass()), player.getX(), player.getY(),
-                GameEntity.getWidth(),
-                GameEntity.getHeight());
+        flyweightMap.get(player.getClass()).setPosition(player.getX(), player.getY());
+        flyweightMap.get(player.getClass()).draw(batch);
+
     }
 
     private static void renderEnemies(SpriteBatch batch) {
         for (GameEntity enemy : enemies) {
-            batch.draw(flyweightMap.get(enemy.getClass()), enemy.getX(), enemy.getY(),
-                    GameEntity.getWidth(),
-                    GameEntity.getHeight());
+            flyweightMap.get(enemy.getClass()).setPosition(enemy.getX(), enemy.getY());
+            flyweightMap.get(enemy.getClass()).draw(batch);
         }
     }
 
     private static void renderBackground(SpriteBatch batch) {
-        batch.draw(level.getBackground(),0,0);
+        level.getBackground().draw(batch);
     }
 
     /**
@@ -293,8 +296,9 @@ public class GameLoop {
      */
     public static void dispose() {
         for (Class textureClasses : flyweightMap.keySet()) {
-            flyweightMap.get(textureClasses).dispose();
+            flyweightMap.get(textureClasses).getTexture().dispose();
         }
+        flyweightMap.get(player.getClass()).getTexture().dispose();
         shapeRenderer.dispose();
     }
 }
