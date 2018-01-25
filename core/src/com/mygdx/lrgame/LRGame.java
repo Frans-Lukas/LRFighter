@@ -7,8 +7,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class LRGame extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img;
+	private SpriteBatch batch;
+
 	
 	@Override
 	public void create () {
@@ -26,6 +26,7 @@ public class LRGame extends ApplicationAdapter {
 		batch.begin();
 		GameLoop.Render(batch);
 		batch.end();
+		GameLoop.doPhysicsStep(Gdx.graphics.getDeltaTime());
 	}
 
 	/**

@@ -8,6 +8,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.lrgame.drawables.entities.enemy.EnemRagdoll;
 import com.mygdx.lrgame.drawables.entities.enemy.Enemy;
 import com.mygdx.lrgame.drawables.entities.GameEntity;
@@ -27,15 +30,23 @@ public class GameLoop {
 
     private static final int BASIC_ENEMY_HEALTH = 1;
     private static final int ENEMY_START_POS_Y = GAME_HEIGHT / 2;
+    private static final float TIME_STEP = 1/45f;
+    private static final int VELOCITY_ITERATIONS = 6;
+    private static final int POSITION_ITERATIONS = 2;
+
     private static Player player;
     private static Enemy enemyToAttack;
 
     private static ArrayList<Enemy> enemies;
-    private static ArrayList<EnemRagdoll> ragdolls;
     private static EnemyModifier nillModifier;
     private static EnemyModifier leftModifier;
     private static EnemyModifier rightModifier;
     private static HashMap<Class, Texture> flyweightMap;
+
+    private static ArrayList<EnemRagdoll> ragdolls;
+    private static World physicsWorld;
+    private static Box2DDebugRenderer debugRenderer;
+    private static float accumulator;
 
     private static Level level;
 
@@ -53,11 +64,15 @@ public class GameLoop {
          * get their textures from.
          */
         enemies = new ArrayList<Enemy>();
+        ragdolls = new ArrayList<>();
         flyweightMap = new HashMap<Class, Texture>();
 
         player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2 - GameEntity.getWidth() / 2, GAME_HEIGHT / 2);
         enemyToAttack = null;
 
+        physicsWorld = new World(new Vector2(0, -10), true);
+        debugRenderer = new Box2DDebugRenderer();
+        accumulator = 0;
 
         flyweightMap.put(Player.class, new Texture("Player.png"));
         flyweightMap.put(Enemy.class, new Texture("Enemy.png"));
@@ -143,7 +158,6 @@ public class GameLoop {
     }
 
     private static void killAndThrowEnemy(Enemy enemyToAttack) {
-        enemies.remove(enemyToAttack);
     }
 
     private static void movePlayer(float xSpeed, float ySpeed){
@@ -217,6 +231,17 @@ public class GameLoop {
         renderEnemies(batch);
         //Lastly player
         renderPlayer(batch);
+    }
+
+    public static void doPhysicsStep(float deltaTime){
+        // fixed time step
+        // max frame time to avoid spiral of death (on slow devices)
+        float frameTime = Math.min(deltaTime, 0.25f);
+        accumulator += frameTime;
+        while (accumulator >= TIME_STEP) {
+            physicsWorld.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
+            accumulator -= TIME_STEP;
+        }
     }
 
     private static void renderPlayer(SpriteBatch batch) {
