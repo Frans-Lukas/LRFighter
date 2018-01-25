@@ -22,43 +22,25 @@ public class Enemy extends GameEntity {
     /**
      * Move towards player.
      * @param player the player to move to
-     * @param extraSpeed the speed that the player moves at
      * @return whether the enemy reached the player or not
      */
-    public boolean update(Player player, float extraSpeed) {
-        if(extraSpeed == 0) {
-            //This enemy is to the right of the player
-            if (x > player.getX() + player.getWidth()) {
-                if (x - getXSpeed() < player.getX() + player.getWidth()) {
-                    x = player.getX() + player.getWidth();
-                    return true;
-                } else {
-                    x -= getXSpeed();
-                }
-            } //this enemy is to the left of the enemy.
-            else if (x < player.getX() - player.getWidth()) {
-                if (x + getXSpeed() > player.getX() - player.getWidth()) {
-                    x = player.getX() - player.getWidth();
-                    return true;
-                } else {
-                    x += getXSpeed();
-                }
+    public void update(Player player) {
+
+        //This enemy is to the right of the player
+        if (x > player.getX() + player.getWidth()) {
+            if (x - getXSpeed() < player.getX() + player.getWidth()) {
+                x = player.getX() + player.getWidth();
+            } else {
+                x -= getXSpeed();
             }
-        } else{
-            float distanceToPlayer = Math.abs(getX() - player.getX());
-            float distanceToTravel = extraSpeed * 100 * Gdx.graphics.getDeltaTime();
-            if(distanceToPlayer <= Math.abs(distanceToTravel)){
-                if(GameLoop.isToTheLeft(player, this)){
-                    x = player.getX() - player.getWidth();
-                } else if(GameLoop.isToTheRight(player, this)){
-                    x = player.getX() + player.getWidth();
-                }
-                return true;
-            } else{
-                x += distanceToTravel;
+        } //this enemy is to the left of the enemy.
+        else if (x < player.getX() - player.getWidth()) {
+            if (x + getXSpeed() > player.getX() - player.getWidth()) {
+                x = player.getX() - player.getWidth();
+            } else {
+                x += getXSpeed();
             }
         }
-        return false;
     }
 
 

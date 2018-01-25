@@ -16,4 +16,7 @@ public class Level {
     public void update(){
 
     }
+
+    public void move(float xSpeed, float ySpeed) {
+    }
 }

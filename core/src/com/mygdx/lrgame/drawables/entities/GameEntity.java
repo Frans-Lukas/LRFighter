@@ -6,8 +6,8 @@ public class GameEntity {
     protected int x;
     protected int y;
     protected int health = 1;
-    protected int xSpeed = 1;
-    protected int ySpeed = 4;
+    protected float xSpeed = 1;
+    protected float ySpeed = 4;
     private static int WIDTH = 32;
     private static int HEIGHT = 32;
     protected EntityState currentEntityState;

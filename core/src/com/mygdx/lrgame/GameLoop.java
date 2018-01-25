@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.mygdx.lrgame.drawables.entities.enemy.Enemy;
 import com.mygdx.lrgame.drawables.entities.GameEntity;
 import com.mygdx.lrgame.drawables.entities.enemy.EnemyModifier;
@@ -74,7 +75,7 @@ public class GameLoop {
         level.update();
         updatePlayer();
         for (Enemy enemy : enemies) {
-            enemy.update(player, 0);
+            enemy.update(player);
         }
     }
 
@@ -99,31 +100,36 @@ public class GameLoop {
                 break;
         }
         if(enemyToAttack != null){
-            if(isColliding(player, enemyToAttack)){
-                enemyToAttack = null;
-            } else {
-                if (isToTheLeft(player, enemyToAttack)) {
-                    updateWorld(-player.getXSpeed(), 0);
-                } else if (isToTheRight(player, enemyToAttack)) {
-                    updateWorld(player.getXSpeed(), 0);
-                }
+            if (isToTheLeft(player, enemyToAttack)) {
+                movePlayer(-player.getXSpeed(), 0);
+            } else if (isToTheRight(player, enemyToAttack)) {
+                movePlayer(player.getXSpeed(), 0);
             }
+
         }
     }
 
-    private static boolean isColliding(GameEntity entity1, GameEntity entity2) {
-        return (entity2.getX() > entity1.getX() &&
-                entity2.getX() < entity1.getX() + entity1.getWidth()) ||
-                (entity2.getX() + entity2.getWidth() > entity1.getX() &&
-                        entity2.getX() + entity2.getWidth() > entity1.getX() + entity1.getWidth());
-    }
 
-    private static void updateWorld(float x, float y){
+
+    private static void movePlayer(float xSpeed, float ySpeed){
         for (Enemy enemy : enemies) {
-            if(enemy.update(player, -x)){
+            Rectangle enemyRect = new Rectangle(enemy.getX() -xSpeed,
+                    enemy.getY() -ySpeed,
+                    enemy.getWidth(),
+                    enemy.getHeight());
+            if(isColliding(enemyRect, player.getPlayerRect())){
                 enemyToAttack = null;
+                break;
+            } else{
+                enemy.setX((int)(enemy.getX() + -xSpeed));
             }
         }
+        level.move(xSpeed, ySpeed);
+    }
+
+    private static boolean isColliding(Rectangle rect1, Rectangle rect2){
+
+        return rect1.overlaps(rect2);
     }
 
     public static boolean isToTheLeft(Player player, Enemy enemy){

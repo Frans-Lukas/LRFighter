@@ -1,5 +1,6 @@
 package com.mygdx.lrgame.drawables.entities.player;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.mygdx.lrgame.drawables.entities.enemy.Enemy;
 import com.mygdx.lrgame.drawables.entities.GameEntity;
 
@@ -13,7 +14,7 @@ public class Player extends GameEntity {
         super(health, x, y);
         currentEntityState = EntityState.STATE_READY;
         this.state = state;
-        xSpeed = 5;
+        xSpeed = 10;
     }
 
     @Override
@@ -32,5 +33,9 @@ public class Player extends GameEntity {
     @Override
     public EntityState getCurrentEntityState() {
         return currentEntityState;
+    }
+
+    public Rectangle getPlayerRect(){
+        return new Rectangle(x, y, getWidth(), getHeight());
     }
 }
