@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.mygdx.lrgame.drawables.entities.enemy.EnemRagdoll;
 import com.mygdx.lrgame.drawables.entities.enemy.Enemy;
 import com.mygdx.lrgame.drawables.entities.GameEntity;
 import com.mygdx.lrgame.drawables.entities.enemy.EnemyModifier;
@@ -30,6 +31,7 @@ public class GameLoop {
     private static Enemy enemyToAttack;
 
     private static ArrayList<Enemy> enemies;
+    private static ArrayList<EnemRagdoll> ragdolls;
     private static EnemyModifier nillModifier;
     private static EnemyModifier leftModifier;
     private static EnemyModifier rightModifier;
@@ -53,7 +55,7 @@ public class GameLoop {
         enemies = new ArrayList<Enemy>();
         flyweightMap = new HashMap<Class, Texture>();
 
-        player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2 - GameEntity.getWidth() / 2, GAME_HEIGHT / 2, new PlayerStateReady());
+        player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2 - GameEntity.getWidth() / 2, GAME_HEIGHT / 2);
         enemyToAttack = null;
 
 
@@ -79,9 +81,18 @@ public class GameLoop {
         }
     }
 
+    /**
+     * Update player according to state
+     */
     private static void updatePlayer() {
+
         switch(player.getCurrentEntityState()){
             case STATE_ATTACKING:
+                if(enemyToAttack != null){
+                    attackEnemy();
+                } else{
+                    player.setCurrentEntityState(GameEntity.EntityState.STATE_READY);
+                }
                 break;
             case STATE_DYING:
                 break;
@@ -95,34 +106,49 @@ public class GameLoop {
                 } else if(rightIsPressed){
                     enemyToAttack = findClosestEnemy(false);
                 }
+                if(enemyToAttack != null){
+                    player.setCurrentEntityState(GameEntity.EntityState.STATE_ATTACKING);
+                }
                 break;
             default:
                 break;
         }
-        if(enemyToAttack != null){
-            if (isToTheLeft(player, enemyToAttack)) {
-                movePlayer(-player.getXSpeed(), 0);
-            } else if (isToTheRight(player, enemyToAttack)) {
-                movePlayer(player.getXSpeed(), 0);
-            }
 
+    }
+
+    private static void attackEnemy(){
+        float xSpeed = player.getXSpeed();
+        float ySpeed = 0;
+
+        boolean isToLeft = true;
+
+        if (isToTheRight(player, enemyToAttack)) {
+            xSpeed = -xSpeed;
+            isToLeft = false;
+        }
+        Rectangle enemyRect = new Rectangle(enemyToAttack.getX() + xSpeed,
+                enemyToAttack.getY() + ySpeed,
+                GameEntity.getWidth(),
+                GameEntity.getHeight());
+
+        if(isColliding(enemyRect, player.getPlayerRect())){
+            enemyToAttack.takeDamage();
+            if(enemyToAttack.getHealth() <= 0){
+                killAndThrowEnemy(enemyToAttack);
+            }
+            enemyToAttack = null;
+        } else{
+            movePlayer(player.getXSpeed(), 0);
         }
     }
 
-
+    private static void killAndThrowEnemy(Enemy enemyToAttack) {
+        enemies.remove(enemyToAttack);
+    }
 
     private static void movePlayer(float xSpeed, float ySpeed){
         for (Enemy enemy : enemies) {
-            Rectangle enemyRect = new Rectangle(enemy.getX() -xSpeed,
-                    enemy.getY() -ySpeed,
-                    enemy.getWidth(),
-                    enemy.getHeight());
-            if(isColliding(enemyRect, player.getPlayerRect())){
-                enemyToAttack = null;
-                break;
-            } else{
-                enemy.setX((int)(enemy.getX() + -xSpeed));
-            }
+            enemy.setX((int)(enemy.getX() + xSpeed));
         }
         level.move(xSpeed, ySpeed);
     }
