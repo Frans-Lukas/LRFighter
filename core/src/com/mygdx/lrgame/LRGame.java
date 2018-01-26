@@ -53,7 +53,7 @@ public class LRGame implements ApplicationListener {
 		batch.begin();
 		GameLoop.Render(batch, cam);
 		batch.end();
-		GameLoop.doPhysicsStep(Gdx.graphics.getDeltaTime());
+		GameLoop.doPhysicsStep(Gdx.graphics.getDeltaTime(), cam);
 	}
 
     @Override

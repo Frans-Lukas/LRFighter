@@ -11,17 +11,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
-import com.mygdx.lrgame.drawables.entities.enemy.EnemRagdoll;
+import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.lrgame.drawables.entities.enemy.Enemy;
 import com.mygdx.lrgame.drawables.entities.GameEntity;
 import com.mygdx.lrgame.drawables.entities.enemy.EnemyModifier;
+import com.mygdx.lrgame.drawables.entities.enemy.EnemyRagdoll;
 import com.mygdx.lrgame.drawables.levels.Level;
 import com.mygdx.lrgame.drawables.entities.player.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class GameLoop {
 
@@ -30,12 +30,16 @@ public class GameLoop {
     private static final int PLAYER_HEALTH = 3;
 
     private static final int BASIC_ENEMY_HEALTH = 1;
-    private static final int ENEMY_START_POS_Y = GAME_HEIGHT / 2 + 2;
-    private static final float TIME_STEP = 1/45f;
+    private static final int ENEMY_START_POS_Y = GAME_HEIGHT / 2;
+    private static final float TIME_STEP = 1/300f;
     private static final int VELOCITY_ITERATIONS = 6;
     private static final int POSITION_ITERATIONS = 2;
+    public static final int X_FORCE_VARIANCE = 400;
+    public static final int Y_FORCE_VARIANCE = 100;
 
     private static Player player;
+    private static final float PLAYER_X_FORCE = 650f;
+    private static final float PLAYER_Y_FORCE = 200f;
     private static Enemy enemyToAttack;
 
     private static ArrayList<Enemy> enemies;
@@ -43,8 +47,9 @@ public class GameLoop {
     private static EnemyModifier leftModifier;
     private static EnemyModifier rightModifier;
     private static HashMap<Class, Sprite> flyweightMap;
+    private static Random randGenerator;
 
-    private static ArrayList<EnemRagdoll> ragdolls;
+    private static ArrayList<EnemyRagdoll> ragdolls;
     private static World physicsWorld;
     private static Box2DDebugRenderer debugRenderer;
     private static float accumulator;
@@ -68,6 +73,7 @@ public class GameLoop {
         enemies = new ArrayList<Enemy>();
         ragdolls = new ArrayList<>();
         flyweightMap = new HashMap<Class, Sprite>();
+        randGenerator = new Random();
 
         player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2, GAME_HEIGHT / 2);
         enemyToAttack = null;
@@ -101,6 +107,24 @@ public class GameLoop {
         }
         if(resetLevel){
             setUp();
+        }
+        updateRagdolls();
+
+
+    }
+
+    /**
+     * Removes ragdolls that are outside of the screen.
+     */
+    private static void updateRagdolls() {
+        for (int i = 0; i < ragdolls.size(); i++) {
+            EnemyRagdoll ragdoll = ragdolls.get(i);
+            float x = ragdoll.getRagdollBody().getPosition().x;
+            ragdoll.update();
+            if(x > GAME_WIDTH  + GameEntity.getWidth() || x < -GameEntity.getWidth()){
+                ragdolls.remove(ragdoll);
+                i--;
+            }
         }
     }
 
@@ -156,7 +180,7 @@ public class GameLoop {
         if(isColliding(enemyRect, playerRect)){
             enemyToAttack.takeDamage();
             if(enemyToAttack.getHealth() <= 0){
-                killAndThrowEnemy(enemyToAttack);
+                killAndThrowEnemy(enemyToAttack, isToTheLeft);
             }
             enemyToAttack = null;
         } else{
@@ -164,7 +188,30 @@ public class GameLoop {
         }
     }
 
-    private static void killAndThrowEnemy(Enemy enemyToAttack) {
+    private static void killAndThrowEnemy(Enemy enemyToAttack, boolean enemyIsToLeft) {
+        enemies.remove(enemyToAttack);
+        BodyDef bDef = new BodyDef();
+        bDef.type = BodyDef.BodyType.DynamicBody;
+        bDef.position.set(enemyToAttack.getX() + GameEntity.getWidth() / 2, enemyToAttack.getY() + GameEntity.getHeight() / 2);
+        Body body = physicsWorld.createBody(bDef);
+
+        PolygonShape rectangle = new PolygonShape();
+        rectangle.setAsBox(GameEntity.getWidth() - 1.75f, GameEntity.getWidth() - 1.75f);
+
+        FixtureDef fixDef = new FixtureDef();
+        fixDef.shape = rectangle;
+        fixDef.density = 0.5f;
+        fixDef.friction = 0.0f;
+
+        Fixture fixture = body.createFixture(fixDef);
+
+        float appliedXForce = (enemyIsToLeft ? -PLAYER_X_FORCE : PLAYER_X_FORCE) + randGenerator.nextInt(X_FORCE_VARIANCE) - X_FORCE_VARIANCE;
+        float appliedYForce = PLAYER_Y_FORCE + randGenerator.nextInt(Y_FORCE_VARIANCE) - Y_FORCE_VARIANCE;
+
+        body.applyLinearImpulse(appliedXForce, appliedYForce, body.getPosition().x, body.getPosition().y, true);
+        ragdolls.add(new EnemyRagdoll(body));
+
+        rectangle.dispose();
     }
 
     private static void movePlayer(float xSpeed, float ySpeed){
@@ -175,7 +222,6 @@ public class GameLoop {
     }
 
     private static boolean isColliding(Rectangle rect1, Rectangle rect2){
-
         return rect1.overlaps(rect2);
     }
 
@@ -241,7 +287,9 @@ public class GameLoop {
         renderPlayer(batch);
     }
 
-    public static void doPhysicsStep(float deltaTime){
+    public static void doPhysicsStep(float deltaTime, OrthographicCamera camera){
+
+        //debugRenderer.render(physicsWorld, camera.combined);
         // fixed time step
         // max frame time to avoid spiral of death (on slow devices)
         float frameTime = Math.min(deltaTime, 0.25f);
@@ -253,10 +301,6 @@ public class GameLoop {
     }
 
     private static void renderPlayer(SpriteBatch batch) {
-        if(enemyToAttack != null){
-            flyweightMap.get(player.getClass()).setPosition(enemyToAttack.getX(), enemyToAttack.getY());
-            flyweightMap.get(player.getClass()).draw(batch);
-        }
         flyweightMap.get(player.getClass()).setPosition(player.getX(), player.getY());
         flyweightMap.get(player.getClass()).draw(batch);
 
@@ -266,6 +310,12 @@ public class GameLoop {
         for (GameEntity enemy : enemies) {
             flyweightMap.get(enemy.getClass()).setPosition(enemy.getX(), enemy.getY());
             flyweightMap.get(enemy.getClass()).draw(batch);
+        }
+
+        for (EnemyRagdoll ragdoll : ragdolls) {
+            flyweightMap.get(Enemy.class).setPosition(ragdoll.getRagdollBody().getPosition().x - GameEntity.getWidth() / 2,
+                                                    ragdoll.getRagdollBody().getPosition().y - GameEntity.getWidth() / 2);
+            flyweightMap.get(Enemy.class).draw(batch);
         }
     }
 
