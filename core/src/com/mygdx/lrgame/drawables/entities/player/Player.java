@@ -12,6 +12,7 @@ public class Player extends GameEntity {
         super(health, x, y);
         currentEntityState = EntityState.STATE_READY;
         xSpeed = 1;
+        health = 5;
     }
 
     @Override
