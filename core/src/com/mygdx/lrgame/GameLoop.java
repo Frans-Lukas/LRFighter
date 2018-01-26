@@ -36,16 +36,17 @@ public class GameLoop {
     private static final int POSITION_ITERATIONS = 2;
     public static final int X_FORCE_VARIANCE = 400;
     public static final int Y_FORCE_VARIANCE = 100;
-
-    private static Player player;
     private static final float PLAYER_X_FORCE = 650f;
     private static final float PLAYER_Y_FORCE = 200f;
+    private static final float SPAWN_TIMER = 2;
+
+    private static float currentTime = 0;
+    private static boolean spawnAtLeftSide;
+
+    private static Player player;
     private static Enemy enemyToAttack;
 
     private static ArrayList<Enemy> enemies;
-    private static EnemyModifier nillModifier;
-    private static EnemyModifier leftModifier;
-    private static EnemyModifier rightModifier;
     private static HashMap<Class, Sprite> flyweightMap;
     private static Random randGenerator;
 
@@ -77,6 +78,7 @@ public class GameLoop {
 
         player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2, GAME_HEIGHT / 2);
         enemyToAttack = null;
+        spawnAtLeftSide = true;
 
         physicsWorld = new World(new Vector2(0, -10), true);
         debugRenderer = new Box2DDebugRenderer();
@@ -110,6 +112,25 @@ public class GameLoop {
         }
         updateRagdolls();
 
+        updateLevel();
+
+    }
+
+    private static void updateLevel() {
+        currentTime += Gdx.graphics.getDeltaTime();
+        if(currentTime >= SPAWN_TIMER){
+            currentTime = 0;
+            float x = -Enemy.getWidth();
+            float y = GAME_HEIGHT / 2;
+            if(!spawnAtLeftSide){
+                x = GAME_WIDTH + Enemy.getWidth();
+            }
+            spawnAtLeftSide = !spawnAtLeftSide;
+
+
+            Enemy enemy = new Enemy(1, x, y);
+            enemies.add(enemy);
+        }
 
     }
 

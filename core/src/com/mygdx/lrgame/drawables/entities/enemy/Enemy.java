@@ -9,7 +9,7 @@ public class Enemy extends GameEntity {
 
 
 
-    public Enemy(int health, int x, int y) {
+    public Enemy(int health, float x, float y) {
         super(health, x, y);
         xSpeed = 0.1f;
     }
