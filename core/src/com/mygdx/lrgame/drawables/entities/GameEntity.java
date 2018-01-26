@@ -3,8 +3,8 @@ package com.mygdx.lrgame.drawables.entities;
 import com.badlogic.gdx.Gdx;
 
 public class GameEntity {
-    protected int x;
-    protected int y;
+    protected float x;
+    protected float y;
     protected int health = 1;
     protected float xSpeed = 0;
     protected float ySpeed = 1;
@@ -31,11 +31,11 @@ public class GameEntity {
         return health;
     }
 
-    public int getX() {
+    public float getX() {
         return x;
     }
 
-    public int getY() {
+    public float getY() {
         return y;
     }
 

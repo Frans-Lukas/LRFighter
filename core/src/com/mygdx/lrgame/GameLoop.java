@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -20,7 +19,6 @@ import com.mygdx.lrgame.drawables.entities.GameEntity;
 import com.mygdx.lrgame.drawables.entities.enemy.EnemyModifier;
 import com.mygdx.lrgame.drawables.levels.Level;
 import com.mygdx.lrgame.drawables.entities.player.Player;
-import com.mygdx.lrgame.drawables.entities.player.PlayerStateReady;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,6 +53,7 @@ public class GameLoop {
 
     private static boolean leftIsPressed;
     private static boolean rightIsPressed;
+    private static boolean resetLevel;
 
     private static ShapeRenderer shapeRenderer = new ShapeRenderer();
     private static Color rangeIndicatorLeftColor = Color.RED;
@@ -90,7 +89,7 @@ public class GameLoop {
         Enemy enemyLeft = new Enemy(BASIC_ENEMY_HEALTH, 0, ENEMY_START_POS_Y);
         Enemy enemyRight = new Enemy(BASIC_ENEMY_HEALTH, GAME_WIDTH, ENEMY_START_POS_Y);
         enemies.add(enemyLeft);
-        //enemies.add(enemyRight);
+        enemies.add(enemyRight);
 
     }
 
@@ -99,6 +98,9 @@ public class GameLoop {
         updatePlayer();
         for (Enemy enemy : enemies) {
             enemy.update(player);
+        }
+        if(resetLevel){
+            setUp();
         }
     }
 
@@ -140,26 +142,25 @@ public class GameLoop {
     private static void attackEnemy(){
         float xSpeed = player.getXSpeed();
         float ySpeed = 0;
-
-        boolean isToLeft = true;
-
+        boolean isToTheLeft = true;
         if (isToTheRight(player, enemyToAttack)) {
             xSpeed = -xSpeed;
-            isToLeft = false;
+            isToTheLeft = false;
         }
         Rectangle enemyRect = new Rectangle(enemyToAttack.getX() + xSpeed,
                 enemyToAttack.getY() + ySpeed,
                 GameEntity.getWidth(),
                 GameEntity.getHeight());
+        Rectangle playerRect = player.getPlayerRect();
 
-        if(isColliding(enemyRect, player.getPlayerRect())){
+        if(isColliding(enemyRect, playerRect)){
             enemyToAttack.takeDamage();
             if(enemyToAttack.getHealth() <= 0){
                 killAndThrowEnemy(enemyToAttack);
             }
             enemyToAttack = null;
         } else{
-            movePlayer(player.getXSpeed(), 0);
+            movePlayer(xSpeed, 0);
         }
     }
 
@@ -193,15 +194,15 @@ public class GameLoop {
      */
     private static Enemy findClosestEnemy(final boolean toLeft) {
         //if toLeft get left half of screen else get right half of screen.
-        final int range = toLeft ? -player.getRange() : player.getRange();
+        final float range = toLeft ? -player.getRange() : player.getRange();
 
         //if toLeft get x pos of left side of player else get right x pos of player
-        final int playerX = toLeft ? player.getX() : player.getX() + player.getWidth();
+        final float playerX = toLeft ? player.getX() : player.getX() + player.getWidth();
 
         //return closest enemy from the list.
         return enemies.stream().
                 filter(entity -> enemyIsInRange(playerX, range, entity.getX())).
-                sorted((enemy1, enemy2) -> toLeft ? (enemy1.getX() - enemy2.getX()) : (enemy2.getX() - enemy1.getX())).
+                sorted((enemy1, enemy2) -> (int) (toLeft ? (enemy1.getX() - enemy2.getX()) : (enemy2.getX() - enemy1.getX()))).
                 findFirst().
                 orElse(null);
     }
@@ -214,9 +215,9 @@ public class GameLoop {
      * @param x the position of the entitiy that might be in range.
      * @return if the x position is inside the range.
      */
-    private static boolean enemyIsInRange(int startPos, int width, int x) {
-        int leftPoint = Math.min(startPos, startPos + width);
-        int rightPoint = Math.max(startPos, startPos + width);
+    private static boolean enemyIsInRange(float startPos, float width, float x) {
+        float leftPoint = Math.min(startPos, startPos + width);
+        float rightPoint = Math.max(startPos, startPos + width);
         return x >= leftPoint && x <= rightPoint;
     }
 
@@ -225,6 +226,7 @@ public class GameLoop {
                         Gdx.input.isKeyPressed(Input.Keys.LEFT);
         rightIsPressed = Gdx.input.isKeyPressed(Input.Keys.D) ||
                         Gdx.input.isKeyPressed(Input.Keys.RIGHT);
+        resetLevel = Gdx.input.isKeyPressed(Input.Keys.R);
 
     }
 
@@ -251,6 +253,10 @@ public class GameLoop {
     }
 
     private static void renderPlayer(SpriteBatch batch) {
+        if(enemyToAttack != null){
+            flyweightMap.get(player.getClass()).setPosition(enemyToAttack.getX(), enemyToAttack.getY());
+            flyweightMap.get(player.getClass()).draw(batch);
+        }
         flyweightMap.get(player.getClass()).setPosition(player.getX(), player.getY());
         flyweightMap.get(player.getClass()).draw(batch);
 
