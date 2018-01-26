@@ -5,7 +5,7 @@ import com.mygdx.lrgame.drawables.entities.enemy.Enemy;
 import com.mygdx.lrgame.drawables.entities.GameEntity;
 
 public class Player extends GameEntity {
-    private final int range = 200;
+    private final int range = 15;
     private Enemy closestEnemy;
 
     public Player(int health, int x, int y) {

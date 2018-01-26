@@ -4,10 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -30,7 +32,7 @@ public class GameLoop {
     private static final int PLAYER_HEALTH = 3;
 
     private static final int BASIC_ENEMY_HEALTH = 1;
-    private static final int ENEMY_START_POS_Y = GAME_HEIGHT / 2;
+    private static final int ENEMY_START_POS_Y = GAME_HEIGHT / 2 + 2;
     private static final float TIME_STEP = 1/45f;
     private static final int VELOCITY_ITERATIONS = 6;
     private static final int POSITION_ITERATIONS = 2;
@@ -88,7 +90,7 @@ public class GameLoop {
         Enemy enemyLeft = new Enemy(BASIC_ENEMY_HEALTH, 0, ENEMY_START_POS_Y);
         Enemy enemyRight = new Enemy(BASIC_ENEMY_HEALTH, GAME_WIDTH, ENEMY_START_POS_Y);
         enemies.add(enemyLeft);
-        enemies.add(enemyRight);
+        //enemies.add(enemyRight);
 
     }
 
@@ -226,11 +228,11 @@ public class GameLoop {
 
     }
 
-    public static void Render(SpriteBatch batch){
+    public static void Render(SpriteBatch batch, OrthographicCamera cam){
         //Always draw level background first.
         renderBackground(batch);
         //Then range indicators
-        renderRange(batch);
+        renderRange(batch, cam);
         //Then Enemies.
         renderEnemies(batch);
         //Lastly player
@@ -269,20 +271,20 @@ public class GameLoop {
      * Render the range indicators for where the player can reach.
      * @param batch
      */
-    private static void renderRange(SpriteBatch batch){
+    private static void renderRange(SpriteBatch batch, OrthographicCamera cam){
         batch.end();
 
+        shapeRenderer.setProjectionMatrix(cam.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
         shapeRenderer.setColor(rangeIndicatorRightColor);
-        shapeRenderer.line(player.getX() + player.getRange(),
-                player.getY(), player.getX() + player.getRange(),
-                player.getY() - GAME_HEIGHT);
+        shapeRenderer.line(player.getX() + player.getRange(), GAME_HEIGHT / 2,
+                player.getX() + player.getRange(), -GAME_HEIGHT);
+
 
         shapeRenderer.setColor(rangeIndicatorLeftColor);
-        shapeRenderer.line(player.getX() - player.getRange(),
-                player.getY(), player.getX() - player.getRange(),
-                player.getY() - GAME_HEIGHT);
+        shapeRenderer.line(player.getX() - player.getRange(), GAME_HEIGHT / 2,
+                player.getX() - player.getRange(), -GAME_HEIGHT);
 
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
