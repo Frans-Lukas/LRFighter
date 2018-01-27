@@ -13,7 +13,7 @@ public class GameEntity {
     protected EntityState currentEntityState;
 
 
-    public GameEntity(int health, int x, int y) {
+    public GameEntity(int health, float x, float y) {
         this.health = health;
         this.x = x;
         this.y = y;
