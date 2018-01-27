@@ -43,7 +43,6 @@ public class LRGame implements ApplicationListener {
 
     @Override
 	public void render () {
-        GameLoop.Input();
         cam.update();
         batch.setProjectionMatrix(cam.combined);
 
