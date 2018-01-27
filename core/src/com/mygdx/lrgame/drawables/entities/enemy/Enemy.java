@@ -11,7 +11,7 @@ public class Enemy extends GameEntity {
 
     public Enemy(int health, float x, float y) {
         super(health, x, y);
-        xSpeed = 0.1f;
+        xSpeed = 0.3f;
     }
 
     @Override

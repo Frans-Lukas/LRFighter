@@ -18,6 +18,7 @@ import com.mygdx.lrgame.drawables.entities.enemy.EnemyModifier;
 import com.mygdx.lrgame.drawables.entities.enemy.EnemyRagdoll;
 import com.mygdx.lrgame.drawables.levels.Level;
 import com.mygdx.lrgame.drawables.entities.player.Player;
+import com.mygdx.lrgame.model.Model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,8 +26,8 @@ import java.util.Random;
 
 public class GameLoop {
 
-    private static final int GAME_HEIGHT = 100;
-    private static final int GAME_WIDTH = 100;
+    public static final int GAME_HEIGHT = 100;
+    public static final int GAME_WIDTH = 100;
     private static final int PLAYER_HEALTH = 3;
 
     private static final int BASIC_ENEMY_HEALTH = 1;
@@ -38,8 +39,9 @@ public class GameLoop {
     public static final int Y_FORCE_VARIANCE = 100;
     private static final float PLAYER_X_FORCE = 650f;
     private static final float PLAYER_Y_FORCE = 200f;
-    private static final float SPAWN_TIMER = 2;
+    private static final float SPAWN_TIMER = 1;
 
+    private static float actualSpawnTimer = 1;
     private static float currentTime = 0;
     private static boolean spawnAtLeftSide;
 
@@ -56,6 +58,7 @@ public class GameLoop {
     private static float accumulator;
 
     private static Level level;
+    private static Model model;
 
     private static boolean leftIsPressed;
     private static boolean rightIsPressed;
@@ -79,6 +82,7 @@ public class GameLoop {
         player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2, GAME_HEIGHT / 2);
         enemyToAttack = null;
         spawnAtLeftSide = true;
+        model = new Model();
 
         physicsWorld = new World(new Vector2(0, -10), true);
         debugRenderer = new Box2DDebugRenderer();
@@ -114,11 +118,13 @@ public class GameLoop {
 
         updateLevel();
 
+        model.update(player, enemies);
+
     }
 
     private static void updateLevel() {
         currentTime += Gdx.graphics.getDeltaTime();
-        if(currentTime >= SPAWN_TIMER){
+        if(currentTime >= actualSpawnTimer){
             currentTime = 0;
             float x = -Enemy.getWidth();
             float y = GAME_HEIGHT / 2;
@@ -127,6 +133,7 @@ public class GameLoop {
             }
             spawnAtLeftSide = !spawnAtLeftSide;
 
+            actualSpawnTimer = SPAWN_TIMER - randGenerator.nextFloat() * 0.5f;
 
             Enemy enemy = new Enemy(1, x, y);
             enemies.add(enemy);
