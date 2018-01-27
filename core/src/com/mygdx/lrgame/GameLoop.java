@@ -123,8 +123,8 @@ public class GameLoop {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
         shapeRenderer.setColor(rangeIndicatorRightColor);
-        shapeRenderer.line(player.getX() + player.getRange(), GAME_HEIGHT / 2,
-                player.getX() + player.getRange(), -GAME_HEIGHT);
+        shapeRenderer.line(player.getX() + GameEntity.getWidth() + player.getRange(), GAME_HEIGHT / 2,
+                player.getX() + GameEntity.getWidth() + player.getRange(), -GAME_HEIGHT);
 
 
         shapeRenderer.setColor(rangeIndicatorLeftColor);
