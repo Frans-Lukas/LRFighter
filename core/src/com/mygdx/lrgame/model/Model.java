@@ -30,6 +30,11 @@ public class Model {
     public static final int Y_FORCE_VARIANCE = 100;
     private static final float PLAYER_X_FORCE = 650f;
     private static final float PLAYER_Y_FORCE = 200f;
+
+    private static final float RESET_X_FORCE = 250f;
+    private static final float RESET_Y_FORCE = 50f;
+
+
     private static final float SPAWN_TIMER = 1;
     private static final float PHYSICS_TIME_STEP = 1/300f;
     private static final int VELOCITY_ITERATIONS = 6;
@@ -38,6 +43,7 @@ public class Model {
     private static float actualSpawnTimer = 1;
     private static float currentTime = 0;
     private static boolean spawnAtLeftSide;
+    private static boolean pauseSpawning = false;
 
     private static Enemy enemyToAttack;
     private Player player;
@@ -103,27 +109,54 @@ public class Model {
     }
 
     private void updateEnemies() {
-        for (Enemy enemy : enemies) {
+        for (int i = 0; i < enemies.size(); i++) {
+            Enemy enemy = enemies.get(i);
+            float xSpeed = isToTheLeft(player, enemy) ? Gdx.graphics.getDeltaTime() : -Gdx.graphics.getDeltaTime();
+
+            Rectangle enemyRectangle = new Rectangle(enemy.getX() + xSpeed, enemy.getY(),
+                    enemy.getWidth(), enemy.getHeight());
+            if(player.getCurrentEntityState() != GameEntity.EntityState.STATE_ATTACKING) {
+                if (isColliding(enemyRectangle, player.getPlayerRect())) {
+                    dealDamageToPlayer();
+                    pauseSpawning = true;
+                    break;
+                }
+            }
             enemy.update(player);
+        }
+    }
+
+    private void dealDamageToPlayer() {
+        player.takeDamage();
+
+        for (int i = 0; i < enemies.size(); i++) {
+            Enemy enemy = enemies.get(i);
+            enemy.setCurrentEntityState(GameEntity.EntityState.STATE_FLYING);
+            float appliedResetXForce = isToTheLeft(player, enemy) ? -RESET_X_FORCE : RESET_X_FORCE;
+            makeRagdollOutOfEnemy(enemy, isToTheLeft(player, enemy), appliedResetXForce, RESET_Y_FORCE);
+            i--;
         }
     }
 
 
     public void updateLevel() {
-        currentTime += Gdx.graphics.getDeltaTime();
-        if(currentTime >= actualSpawnTimer){
-            currentTime = 0;
-            float x = -Enemy.getWidth();
-            float y = GAME_HEIGHT / 2;
-            if(!spawnAtLeftSide){
-                x = GAME_WIDTH + Enemy.getWidth();
+        if(!pauseSpawning) {
+            currentTime += Gdx.graphics.getDeltaTime();
+            if (currentTime >= actualSpawnTimer) {
+                currentTime = 0;
+                float x = -Enemy.getWidth();
+                float y = GAME_HEIGHT / 2;
+                if (!spawnAtLeftSide) {
+                    x = GAME_WIDTH + Enemy.getWidth();
+                }
+                spawnAtLeftSide = !spawnAtLeftSide;
+
+                actualSpawnTimer = SPAWN_TIMER - randGenerator.nextFloat() * 0.5f;
+
+                Enemy enemy = new Enemy(1, x, y);
+                enemy.setCurrentEntityState(GameEntity.EntityState.STATE_ATTACKING);
+                enemies.add(enemy);
             }
-            spawnAtLeftSide = !spawnAtLeftSide;
-
-            actualSpawnTimer = SPAWN_TIMER - randGenerator.nextFloat() * 0.5f;
-
-            Enemy enemy = new Enemy(1, x, y);
-            enemies.add(enemy);
         }
     }
 
@@ -141,21 +174,23 @@ public class Model {
             switch (ragdollState){
 
                 //Remove enemy object when out of screen.
-                case STATE_DYING:
+                case STATE_FLYING:
+                    //Recover enemy when ragdoll hits ground.
+                    if(y - GameEntity.getWidth() / 2 < ENEMY_START_POS_Y){
+                        ragdolls.remove(ragdoll);
+                        Enemy recoveredEnemy = ragdoll.getFromEnemy();
+                        recoveredEnemy.setY(ENEMY_START_POS_Y);
+                        recoveredEnemy.setX((int)ragdoll.getRagdollBody().getPosition().x);
+                        recoveredEnemy.setCurrentEntityState(GameEntity.EntityState.STATE_ATTACKING);
+                        enemies.add(recoveredEnemy);
+                        pauseSpawning = false;
+                    }
+                    break;
+                default:
                     if (x > GAME_WIDTH + GameEntity.getWidth() || x < -GameEntity.getWidth()) {
                         ragdolls.remove(ragdoll);
                         i--;
                     }
-                    break;
-                case STATE_FLYING:
-                    //Recover enemy when ragdoll hits ground.
-                    if(y >= ENEMY_START_POS_Y){
-                        ragdolls.remove(ragdoll);
-                        Enemy recoveredEnemy = ragdoll.getFromEnemy();
-                        recoveredEnemy.setY(ENEMY_START_POS_Y);
-                        enemies.add(recoveredEnemy);
-                    }
-                    break;
             }
         }
     }
@@ -229,12 +264,21 @@ public class Model {
     }
 
     private void killAndThrowEnemy(Enemy enemyToAttack, boolean enemyIsToLeft) {
-        enemies.remove(enemyToAttack);
         enemyToAttack.setCurrentEntityState(GameEntity.EntityState.STATE_DYING);
+
+        float X_FORCE = (enemyIsToLeft ? -PLAYER_X_FORCE : PLAYER_X_FORCE) +
+                randGenerator.nextInt(X_FORCE_VARIANCE) - X_FORCE_VARIANCE;
+
+        makeRagdollOutOfEnemy(enemyToAttack, enemyIsToLeft, X_FORCE,
+                PLAYER_Y_FORCE + randGenerator.nextInt(Y_FORCE_VARIANCE) - Y_FORCE_VARIANCE);
+    }
+
+    private void makeRagdollOutOfEnemy(Enemy enemyToMakeIntoRagdoll, boolean enemyIsToLeft, float appliedXForce, float appliedYForce){
+        enemies.remove(enemyToMakeIntoRagdoll);
 
         BodyDef bDef = new BodyDef();
         bDef.type = BodyDef.BodyType.DynamicBody;
-        bDef.position.set(enemyToAttack.getX() + GameEntity.getWidth() / 2, enemyToAttack.getY() + GameEntity.getHeight() / 2);
+        bDef.position.set(enemyToMakeIntoRagdoll.getX() + GameEntity.getWidth() / 2, enemyToMakeIntoRagdoll.getY() + GameEntity.getHeight() / 2);
         Body body = physicsWorld.createBody(bDef);
 
         PolygonShape rectangle = new PolygonShape();
@@ -248,11 +292,9 @@ public class Model {
         //this is needed for some reason?
         Fixture fixture = body.createFixture(fixDef);
 
-        float appliedXForce = (enemyIsToLeft ? -PLAYER_X_FORCE : PLAYER_X_FORCE) + randGenerator.nextInt(X_FORCE_VARIANCE) - X_FORCE_VARIANCE;
-        float appliedYForce = PLAYER_Y_FORCE + randGenerator.nextInt(Y_FORCE_VARIANCE) - Y_FORCE_VARIANCE;
         body.applyLinearImpulse(appliedXForce, appliedYForce, body.getPosition().x, body.getPosition().y, true);
 
-        ragdolls.add(new EnemyRagdoll(body, enemyToAttack));
+        ragdolls.add(new EnemyRagdoll(body, enemyToMakeIntoRagdoll));
 
         rectangle.dispose();
     }
