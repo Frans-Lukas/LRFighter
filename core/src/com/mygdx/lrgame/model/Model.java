@@ -89,9 +89,7 @@ public class Model {
 
         level.update();
         updatePlayer();
-        for (Enemy enemy : enemies) {
-            enemy.update(player);
-        }
+        updateEnemies();
         if(resetLevel){
             GameLoop.setUp();
         }
@@ -102,6 +100,12 @@ public class Model {
 
         input();
 
+    }
+
+    private void updateEnemies() {
+        for (Enemy enemy : enemies) {
+            enemy.update(player);
+        }
     }
 
 
@@ -124,7 +128,7 @@ public class Model {
     }
 
     /**
-     * Removes ragdolls that are outside of the screen.
+     * Update all ragdolls according to their state.
      */
     public void updateRagdolls() {
         for (int i = 0; i < ragdolls.size(); i++) {
@@ -135,6 +139,8 @@ public class Model {
             float y = ragdoll.getRagdollBody().getPosition().y;
 
             switch (ragdollState){
+
+                //Remove enemy object when out of screen.
                 case STATE_DYING:
                     if (x > GAME_WIDTH + GameEntity.getWidth() || x < -GameEntity.getWidth()) {
                         ragdolls.remove(ragdoll);
@@ -142,6 +148,7 @@ public class Model {
                     }
                     break;
                 case STATE_FLYING:
+                    //Recover enemy when ragdoll hits ground.
                     if(y >= ENEMY_START_POS_Y){
                         ragdolls.remove(ragdoll);
                         Enemy recoveredEnemy = ragdoll.getFromEnemy();
@@ -257,14 +264,14 @@ public class Model {
         level.move(xSpeed, ySpeed);
     }
 
-    private static boolean isColliding(Rectangle rect1, Rectangle rect2){
+    private boolean isColliding(Rectangle rect1, Rectangle rect2){
         return rect1.overlaps(rect2);
     }
 
-    public static boolean isToTheLeft(Player player, Enemy enemy){
+    public boolean isToTheLeft(Player player, Enemy enemy){
         return enemy.getX() < player.getX();
     }
-    public static boolean isToTheRight(Player player, Enemy enemy){
+    public boolean isToTheRight(Player player, Enemy enemy){
         return enemy.getX() > player.getX() + player.getWidth();
     }
 
@@ -297,7 +304,7 @@ public class Model {
      * @param x the position of the entitiy that might be in range.
      * @return if the x position is inside the range.
      */
-    private static boolean enemyIsInRange(float startPos, float width, float x) {
+    private boolean enemyIsInRange(float startPos, float width, float x) {
         float leftPoint = Math.min(startPos, startPos + width);
         float rightPoint = Math.max(startPos, startPos + width);
         return x >= leftPoint && x <= rightPoint;
