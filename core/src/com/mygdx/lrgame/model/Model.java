@@ -57,7 +57,7 @@ public class Model {
 
 
     public Model() {
-        enemies = new ArrayList<Enemy>();
+        enemies = new ArrayList<>();
         ragdolls = new ArrayList<>();
         randGenerator = new Random();
 
@@ -73,6 +73,9 @@ public class Model {
 
         Enemy enemyLeft = new Enemy(BASIC_ENEMY_HEALTH, 0, ENEMY_START_POS_Y);
         Enemy enemyRight = new Enemy(BASIC_ENEMY_HEALTH, GAME_WIDTH, ENEMY_START_POS_Y);
+        enemyLeft.setCurrentEntityState(GameEntity.EntityState.STATE_ATTACKING);
+        enemyRight.setCurrentEntityState(GameEntity.EntityState.STATE_ATTACKING);
+
         enemies.add(enemyLeft);
         enemies.add(enemyRight);
     }
@@ -92,6 +95,7 @@ public class Model {
         if(resetLevel){
             GameLoop.setUp();
         }
+
         updateRagdolls();
 
         updateLevel();
@@ -125,11 +129,26 @@ public class Model {
     public void updateRagdolls() {
         for (int i = 0; i < ragdolls.size(); i++) {
             EnemyRagdoll ragdoll = ragdolls.get(i);
-            float x = ragdoll.getRagdollBody().getPosition().x;
             ragdoll.update();
-            if(x > GAME_WIDTH  + GameEntity.getWidth() || x < -GameEntity.getWidth()){
-                ragdolls.remove(ragdoll);
-                i--;
+            GameEntity.EntityState ragdollState = ragdoll.getFromEnemy().getCurrentEntityState();
+            float x = ragdoll.getRagdollBody().getPosition().x;
+            float y = ragdoll.getRagdollBody().getPosition().y;
+
+            switch (ragdollState){
+                case STATE_DYING:
+                    if (x > GAME_WIDTH + GameEntity.getWidth() || x < -GameEntity.getWidth()) {
+                        ragdolls.remove(ragdoll);
+                        i--;
+                    }
+                    break;
+                case STATE_FLYING:
+                    if(y >= ENEMY_START_POS_Y){
+                        ragdolls.remove(ragdoll);
+                        Enemy recoveredEnemy = ragdoll.getFromEnemy();
+                        recoveredEnemy.setY(ENEMY_START_POS_Y);
+                        enemies.add(recoveredEnemy);
+                    }
+                    break;
             }
         }
     }
@@ -204,6 +223,8 @@ public class Model {
 
     private void killAndThrowEnemy(Enemy enemyToAttack, boolean enemyIsToLeft) {
         enemies.remove(enemyToAttack);
+        enemyToAttack.setCurrentEntityState(GameEntity.EntityState.STATE_DYING);
+
         BodyDef bDef = new BodyDef();
         bDef.type = BodyDef.BodyType.DynamicBody;
         bDef.position.set(enemyToAttack.getX() + GameEntity.getWidth() / 2, enemyToAttack.getY() + GameEntity.getHeight() / 2);
@@ -217,13 +238,14 @@ public class Model {
         fixDef.density = 0.5f;
         fixDef.friction = 0.0f;
 
+        //this is needed for some reason?
         Fixture fixture = body.createFixture(fixDef);
 
         float appliedXForce = (enemyIsToLeft ? -PLAYER_X_FORCE : PLAYER_X_FORCE) + randGenerator.nextInt(X_FORCE_VARIANCE) - X_FORCE_VARIANCE;
         float appliedYForce = PLAYER_Y_FORCE + randGenerator.nextInt(Y_FORCE_VARIANCE) - Y_FORCE_VARIANCE;
-
         body.applyLinearImpulse(appliedXForce, appliedYForce, body.getPosition().x, body.getPosition().y, true);
-        ragdolls.add(new EnemyRagdoll(body));
+
+        ragdolls.add(new EnemyRagdoll(body, enemyToAttack));
 
         rectangle.dispose();
     }

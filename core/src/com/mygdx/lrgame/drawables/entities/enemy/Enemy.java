@@ -7,8 +7,6 @@ import com.mygdx.lrgame.drawables.entities.player.Player;
 
 public class Enemy extends GameEntity {
 
-
-
     public Enemy(int health, float x, float y) {
         super(health, x, y);
         xSpeed = 0.3f;
@@ -42,6 +40,8 @@ public class Enemy extends GameEntity {
             }
         }
     }
+
+
 
 
 }
