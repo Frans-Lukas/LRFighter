@@ -92,7 +92,7 @@ public class GameLoop {
     }
 
     private static void renderBackground(SpriteBatch batch) {
-        model.getLevel().getBackground().draw(batch);
+        model.getLevel().render(batch);
     }
 
     /**

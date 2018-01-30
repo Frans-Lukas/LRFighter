@@ -2,6 +2,7 @@ package com.mygdx.lrgame.drawables.levels;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import static com.mygdx.lrgame.LRGame.WORLD_HEIGHT;
 import static com.mygdx.lrgame.LRGame.WORLD_WIDTH;
@@ -37,9 +38,16 @@ public class Level {
 
     }
 
+    public void render(SpriteBatch batch){
+        background.draw(batch);
+        backgroundLeft.draw(batch);
+        backgroundRight.draw(batch);
+
+    }
+
     public void move(float xSpeed, float ySpeed) {
         background.setPosition(background.getX() + xSpeed, background.getY() + ySpeed);
-        backgroundLeft.setPosition(background.getX() + xSpeed, background.getY() + ySpeed);
-        backgroundRight.setPosition(background.getX() + xSpeed, background.getY() + ySpeed);
+        backgroundLeft.setPosition(backgroundLeft.getX() + xSpeed, backgroundLeft.getY() + ySpeed);
+        backgroundRight.setPosition(backgroundRight.getX() + xSpeed, backgroundRight.getY() + ySpeed);
     }
 }
