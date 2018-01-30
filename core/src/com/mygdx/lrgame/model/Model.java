@@ -35,12 +35,12 @@ public class Model {
     private static final float RESET_Y_FORCE = 50f;
 
 
-    private static final float SPAWN_TIMER = 1;
+    private static final float SPAWN_TIMER = 1.5f;
     private static final float PHYSICS_TIME_STEP = 1/300f;
     private static final int VELOCITY_ITERATIONS = 6;
     private static final int POSITION_ITERATIONS = 2;
 
-    private static float actualSpawnTimer = 1;
+    private static float actualSpawnTimer = 1.5f;
     private static float currentTime = 0;
     private static boolean spawnAtLeftSide;
     private static boolean pauseSpawning = false;

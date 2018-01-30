@@ -54,21 +54,6 @@ public class GameLoop {
     }
 
     public static void Update(){
-        /*
-
-
-        level.update();
-        updatePlayer();
-        for (Enemy enemy : enemies) {
-            enemy.update(player);
-        }
-        if(resetLevel){
-            setUp();
-        }
-        updateRagdolls();
-
-        updateLevel();
-        */
         model.update();
 
     }
