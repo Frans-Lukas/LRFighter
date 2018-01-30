@@ -26,13 +26,14 @@ public class Model {
 
     private static final int BASIC_ENEMY_HEALTH = 1;
     private static final int ENEMY_START_POS_Y = GAME_HEIGHT / 2;
-    public static final int X_FORCE_VARIANCE = 400;
-    public static final int Y_FORCE_VARIANCE = 100;
-    private static final float PLAYER_X_FORCE = 650f;
-    private static final float PLAYER_Y_FORCE = 200f;
 
-    private static final float RESET_X_FORCE = 250f;
-    private static final float RESET_Y_FORCE = 50f;
+    public int X_FORCE_VARIANCE = 100;
+    public int Y_FORCE_VARIANCE = 25;
+    private float PLAYER_X_FORCE = 162.5f ;
+    private float PLAYER_Y_FORCE = 50f;
+
+    private float RESET_X_FORCE = 62.5f;
+    private float RESET_Y_FORCE = 12.5f;
 
 
     private static final float SPAWN_TIMER = 1.5f;
@@ -70,6 +71,14 @@ public class Model {
         player = new Player(PLAYER_HEALTH, GAME_WIDTH / 2, GAME_HEIGHT / 2);
         enemyToAttack = null;
         spawnAtLeftSide = true;
+
+        //Make all forces based on entity size.
+        PLAYER_X_FORCE = PLAYER_X_FORCE * GameEntity.getWidth();
+        PLAYER_Y_FORCE = PLAYER_Y_FORCE * GameEntity.getHeight();
+        X_FORCE_VARIANCE = X_FORCE_VARIANCE * GameEntity.getHeight();
+        Y_FORCE_VARIANCE = Y_FORCE_VARIANCE * GameEntity.getHeight();
+        RESET_X_FORCE = RESET_X_FORCE * GameEntity.getHeight();
+        RESET_Y_FORCE = RESET_Y_FORCE * GameEntity.getHeight();
 
         physicsWorld = new World(new Vector2(0, -10), true);
         debugRenderer = new Box2DDebugRenderer();
@@ -286,7 +295,8 @@ public class Model {
 
         FixtureDef fixDef = new FixtureDef();
         fixDef.shape = rectangle;
-        fixDef.density = 0.5f;
+        //used to be 0.5f. Is based on size of box.
+        fixDef.density = 30f;
         fixDef.friction = 0.0f;
 
         //this is needed for some reason?
