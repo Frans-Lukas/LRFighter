@@ -1,5 +1,5 @@
 # LRFighter 
-
+A game about rythm and fast clicking. 
 
 ## Getting Started
 Clone the project and run the gradle files. For easiest compilation and building use Intellij. 
